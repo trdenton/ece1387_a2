@@ -9,9 +9,6 @@
 #include <limits.h>
 #include "spdlog/spdlog.h"
 
-//this is used to instantiate test connections for ui test purposes
-#include "ui_tests.h"
-
 using namespace std;
 
 #define UNUSED (INT_MAX)
@@ -26,15 +23,6 @@ class circuit {
     circuit(string s);
 
     ~circuit() {
-    }
-
-    string dump_connections() {
-      ostringstream outstring;
-      for (auto* conn : conns){
-        outstring << conn->to_string() << endl;
-      }
-
-      return outstring.str();
     }
 
     bool fit(bool interactive);

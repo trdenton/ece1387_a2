@@ -100,8 +100,6 @@ int main(int n, char** args) {
         t1.join();
     }
 
-    spdlog::info("Total segments used: {}", circ->total_segments());
-
     spdlog::info("Exiting");
     delete(circ);
     return 0;

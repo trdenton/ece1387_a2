@@ -62,6 +62,7 @@ enable_testing()
 add_executable(
   unit_tests
   file_read_test.cc
+  circuit.cpp
   #data_init_test.cc
   #switch_conn_test.cc
 )
@@ -74,6 +75,7 @@ add_executable(
   a2
   main.cpp
   ui.cpp
+  circuit.cpp
   easygl/graphics.cpp
 )
 target_link_libraries(
@@ -82,10 +84,10 @@ target_link_libraries(
   ${X11_LIBRARIES}
 )
 target_link_libraries(
-  data_init_tests
+  unit_tests
   GTest::gtest_main
   spdlog::spdlog
 )
 
 include(GoogleTest)
-gtest_discover_tests(data_init_tests)
+gtest_discover_tests(unit_tests)

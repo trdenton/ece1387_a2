@@ -45,14 +45,10 @@ circuit::circuit(string file) {
     // first line -  grid size 
     // second line - tracks per channel
     getline(infile, line);
-    grid_size = stoi(line);
 
-    getline(infile, line);
-    tracks_per_channel = stoi(line);
-    if (force_w > 0)
-        tracks_per_channel = force_w;
         
 
+    /*
     spdlog::debug("grid size {} tracks per channel {}", grid_size, tracks_per_channel);
 
     while (true) {
@@ -74,6 +70,7 @@ circuit::circuit(string file) {
     }
     string conns = dump_connections();
     spdlog::debug("connection dump:\n{}", conns);
+    */
 
     infile.close();
   } else {
