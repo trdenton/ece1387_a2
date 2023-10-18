@@ -17,22 +17,22 @@ mutex cv_m;
 int update_sig = 0;
 
 void circuit_wait_for_ui() {
-    unique_lock<std::mutex> lk(cv_m);
-    cv.wait(lk,[]{return update_sig==1;});
-    update_sig=0;
+  unique_lock<std::mutex> lk(cv_m);
+  cv.wait(lk,[]{return update_sig==1;});
+  update_sig=0;
 }
 
 void circuit_next_step() {
-    {
-        lock_guard<mutex> lk(cv_m);
-        update_sig = 1;
-    }
-    cv.notify_one();
+  {
+    lock_guard<mutex> lk(cv_m);
+    update_sig = 1;
+  }
+  cv.notify_one();
 }
 
 enum input_read_state {
-    SECTION_1,
-    SECTION_2
+  SECTION_1,
+  SECTION_2
 };
 
 circuit::circuit(string file) {
@@ -42,36 +42,31 @@ circuit::circuit(string file) {
 
   if (infile.is_open()) {
 
-    // first line -  grid size 
-    // second line - tracks per channel
-    getline(infile, line);
+    enum input_read_state read_state = SECTION_1;
 
-        
-
-    /*
-    spdlog::debug("grid size {} tracks per channel {}", grid_size, tracks_per_channel);
-
-    while (true) {
+    bool done = false;
+    while (!done) {
       getline(infile, line);
       std::stringstream ss(line);
       istream_iterator<std::string> begin(ss);
       istream_iterator<std::string> end;
       vector<string> vstrings(begin, end);
-      if (vstrings[0] == "-1")
-        break;
-      spdlog::debug("size of vstrings: {}", vstrings.size());
-      connection* c = new connection(vstrings);
-      spdlog::debug("size of vstrings: {}", vstrings.size());
-      if (c->d0 == 1 or c->d1 == 1) {
-        spdlog::debug("detected dense circuit");
-        layers = 2;
+      switch(read_state) {
+        case SECTION_1:
+          if (vstrings[0] == "-1") {
+            read_state = SECTION_2;
+            break;
+          }
+          add_block_connections(vstrings);
+           
+          break;
+        case SECTION_2:
+          if (vstrings[0] == "-1") {
+            done = true;
+          }
+          break;
       }
-      add_connection(c);
     }
-    string conns = dump_connections();
-    spdlog::debug("connection dump:\n{}", conns);
-    */
-
     infile.close();
   } else {
     spdlog::error("Could not open {}", file);
@@ -79,7 +74,13 @@ circuit::circuit(string file) {
 }
 
 bool circuit::fit(bool interactive) {
-    return true;
+  return true;
+}
+
+void circuit::add_block_connections(vector<string> toks) {
 }
 
 
+block::block(string s) {
+  label = stoi(s);
+}

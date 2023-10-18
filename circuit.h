@@ -11,21 +11,28 @@
 
 using namespace std;
 
-#define UNUSED (INT_MAX)
-#define TARGET (INT_MAX-1)
-#define USED (INT_MAX-2)
-#define ON_PATH(__X__) (__X__ < USED)
-#define SOURCE (0)
+class block {
+  private:
+    int label;
+    vector<block*> connections;
+
+  public:
+    block(string s);
+    void connect(block* other);
+  
+};
 
 class circuit {
+  private:
+    vector<block*> blocks;
+
   public:
-
     circuit(string s);
-
     ~circuit() {
     }
 
     bool fit(bool interactive);
+    void add_block_connections(vector<string> toks);
 };
 void circuit_wait_for_ui();
 void circuit_next_step();
