@@ -5,7 +5,6 @@
 #include <getopt.h>
 #include "spdlog/spdlog.h"
 #include "version.h"
-#include "circuit.h"
 #include "easygl/graphics.h"
 #include "ui.h"
 #include <thread>
@@ -13,26 +12,24 @@
 using namespace std;
 
 void print_usage() {
-    cout << "Usage: ./a2 [-hv] " << endl;
+    cout << "Usage: ./a2 [-hdvis] -f filename" << endl;
     cout << "\t-h: this help message" <<endl;
     cout << "\t-v: print version info" <<endl;
     cout << "\t-f circuit_file: the circuit file (required)" <<endl;
     cout << "\t-d: turn on debug log level" <<endl;
     cout << "\t-i: enable interactive (gui) mode" <<endl;
-    cout << "\t-s: step through routing" <<endl;
-    cout << "\t-w: force a track width" <<endl;
-    cout << "\t-p postscript_file: output image to ps file" <<endl;
+    cout << "\t-s: step through algorithm" <<endl;
 }
 
 void print_version() {
-    spdlog::info("a1 - Troy Denton 2023");
+    spdlog::info("a2 - Troy Denton 2023");
     spdlog::info("Version {}.{}", VERSION_MAJOR, VERSION_MINOR);
     spdlog::info("Commit {}", GIT_COMMIT);
     spdlog::info("Built {}" , __TIMESTAMP__);
 }
 
 void route_thread(circuit* circ, bool interactive) {
-    bool result = circ->route(interactive);
+    bool result = circ->fit(interactive);
     if (result)
         spdlog::info("Successfully routed design");
     else
@@ -49,7 +46,7 @@ int main(int n, char** args) {
 
     for(;;)
     {
-        switch(getopt(n, args, "vhf:disp:w:"))
+        switch(getopt(n, args, "vhf:dis"))
         {
             case 'f':
                 file = optarg;
@@ -63,19 +60,9 @@ int main(int n, char** args) {
                 print_version();
                 return 0;
 
-            case 'p':
-                ps_file = optarg;
-                continue;
-
             case 's':
                 step = true;
                 continue;
-
-            case 'w':
-                force_w = stoi(optarg);
-                spdlog::info("Forcing W to {}", force_w);
-                continue;
-
 
             case 'i':
                 interactive = true;
@@ -93,14 +80,14 @@ int main(int n, char** args) {
     }
 
     if (file == "") {
-        cerr << "Error: must provide input file" << endl;
+        spdlog::error("Error: must provide input file");
         print_usage();
         return 1;
     }
 
     print_version();
 
-    circuit* circ = new circuit(file, force_w);
+    circuit* circ = new circuit(file);
     thread t1(route_thread, circ, step);
 
     if (!interactive)
@@ -112,9 +99,7 @@ int main(int n, char** args) {
         ui_teardown();
         t1.join();
     }
-    if (ps_file != "") {
-        ps_output(circ, ps_file);
-    }
+
     spdlog::info("Total segments used: {}", circ->total_segments());
 
     spdlog::info("Exiting");
