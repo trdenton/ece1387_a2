@@ -13,11 +13,11 @@ using namespace std;
 
 class block {
   private:
-    int label;
-    vector<block*> connections;
+    vector<string> nets;
 
   public:
-    block(string s);
+    string label;
+    block(vector<string> s);
     void connect(block* other);
   
 };
@@ -30,6 +30,7 @@ class circuit {
     circuit(string s);
     ~circuit() {
     }
+    int get_n_blocks() { return blocks.size();}
 
     bool fit(bool interactive);
     void add_block_connections(vector<string> toks);

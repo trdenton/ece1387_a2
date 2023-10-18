@@ -5,6 +5,7 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
+#include <iterator>
 #include "spdlog/spdlog.h"
 #include <thread>
 #include <unistd.h>
@@ -78,9 +79,12 @@ bool circuit::fit(bool interactive) {
 }
 
 void circuit::add_block_connections(vector<string> toks) {
+  block* b = new block(toks);
+  blocks.push_back(b);
 }
 
 
-block::block(string s) {
-  label = stoi(s);
+block::block(vector<string> s) {
+  label = s[0];
+  nets = std::vector<string>(s.begin()+1,s.end()-1);
 }

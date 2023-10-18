@@ -6,7 +6,7 @@
 TEST(FileRead, cct1) {
   circuit* c = new circuit("../data/cct1");
 
-  ASSERT_TRUE(true);
+  ASSERT_EQ(c->get_n_blocks(),26);
 
   delete(c);
 }
