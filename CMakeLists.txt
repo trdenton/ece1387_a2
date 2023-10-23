@@ -14,9 +14,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include (${CMAKE_ROOT}/Modules/FindX11.cmake)
 include_directories(${X11_INCLUDE_DIR})
-
-
+include (ExternalProject)
 include(FetchContent)
+
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
@@ -26,6 +26,17 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/gabime/spdlog.git
   GIT_TAG v1.x
 )
+ExternalProject_Add(
+  suitesparse
+  URL https://janders.eecg.utoronto.ca/1387_2023/SuiteSparse-5.10.1.tar.gz
+  BUILD_IN_SOURCE TRUE
+  CONFIGURE_COMMAND ""
+  INSTALL_COMMAND ""
+  BUILD_COMMAND cd SuiteSparse_config && make UMFPACK_CONFIG="-DNCHOLMOD -DNBLAS" library
+  COMMAND cd AMD && make UMFPACK_CONFIG="-DNCHOLMOD -DNBLAS" library
+  COMMAND cd UMFPACK && make UMFPACK_CONFIG="-DNCHOLMOD -DNBLAS" library
+)
+
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
@@ -63,14 +74,11 @@ add_executable(
   unit_tests
   file_read_test.cc
   circuit.cpp
-  #data_init_test.cc
-  #switch_conn_test.cc
 )
 
 #
 # ACTUAL PROGRAM
 ##################
-
 add_executable(
   a2
   main.cpp
@@ -78,10 +86,15 @@ add_executable(
   circuit.cpp
   easygl/graphics.cpp
 )
+
+ExternalProject_Get_Property(suitesparse SOURCE_DIR)
+include_directories(${SOURCE_DIR}/UMFPACK/Include)
+
 target_link_libraries(
   a2
   spdlog::spdlog
   ${X11_LIBRARIES}
+  ${SOURCE_DIR}/UMFPACK/Lib/libumfpack.a
 )
 target_link_libraries(
   unit_tests
