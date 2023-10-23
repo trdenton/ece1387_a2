@@ -88,15 +88,14 @@ add_executable(
 )
 
 ExternalProject_Get_Property(suitesparse SOURCE_DIR)
-include_directories(${SOURCE_DIR}/UMFPACK/Include)
-include_directories(${SOURCE_DIR}/AMD/Include)
-include_directories(${SOURCE_DIR}/SuiteSparse_config)
+include_directories(${SOURCE_DIR}/include)
 
 target_link_libraries(
   a2
   spdlog::spdlog
   ${X11_LIBRARIES}
-  ${SOURCE_DIR}/UMFPACK/Lib/libumfpack.a
+  ${SOURCE_DIR}/lib/libumfpack.dylib
+  ${SOURCE_DIR}/lib/libamd.dylib
 )
 target_link_libraries(
   unit_tests
