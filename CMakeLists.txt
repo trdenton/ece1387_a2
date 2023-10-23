@@ -90,12 +90,20 @@ add_executable(
 ExternalProject_Get_Property(suitesparse SOURCE_DIR)
 include_directories(${SOURCE_DIR}/include)
 
+# there is definitely a better way to handle this
+# but I am not going to sort that out tonight
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	set(LIBEXT dynlib)
+else()
+	set(LIBEXT so)
+endif()
+
 target_link_libraries(
   a2
   spdlog::spdlog
   ${X11_LIBRARIES}
-  ${SOURCE_DIR}/lib/libumfpack.dylib
-  ${SOURCE_DIR}/lib/libamd.dylib
+  ${SOURCE_DIR}/lib/libumfpack.${LIBEXT}
+  ${SOURCE_DIR}/lib/libamd.${LIBEXT}
 )
 target_link_libraries(
   unit_tests
