@@ -93,7 +93,7 @@ include_directories(${SOURCE_DIR}/include)
 # there is definitely a better way to handle this
 # but I am not going to sort that out tonight
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	set(LIBEXT dynlib)
+	set(LIBEXT dylib)
 else()
 	set(LIBEXT so)
 endif()
