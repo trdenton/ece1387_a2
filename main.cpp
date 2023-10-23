@@ -7,6 +7,7 @@
 #include "version.h"
 #include "easygl/graphics.h"
 #include "ui.h"
+#include "umfpack.h"
 #include <thread>
 
 using namespace std;

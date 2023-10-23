@@ -89,6 +89,8 @@ add_executable(
 
 ExternalProject_Get_Property(suitesparse SOURCE_DIR)
 include_directories(${SOURCE_DIR}/UMFPACK/Include)
+include_directories(${SOURCE_DIR}/AMD/Include)
+include_directories(${SOURCE_DIR}/SuiteSparse_config)
 
 target_link_libraries(
   a2
