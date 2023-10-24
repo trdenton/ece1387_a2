@@ -23,6 +23,7 @@ class block {
     void connect(block* other);
     void set_coords(int _x, int _y);
     vector<int>* get_coords();
+    vector<string> get_nets();
   
 };
 

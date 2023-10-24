@@ -120,3 +120,7 @@ vector<int>* block::get_coords() {
   vec->push_back(y);
   return vec;
 }
+
+vector<string> block::get_nets() {
+  return nets;
+}
