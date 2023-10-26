@@ -22,13 +22,12 @@ class net {
         float weight;
         string label;
         net(string l);
-        vector<cell*> get_cells();
+        unordered_set<string> get_cell_labels();
         bool operator==(const net& other) const {
             return this->label == other.label;
         }
         void add_cell(cell& n);
         void add_cell(string c);
-        unordered_set<string> get_cell_labels();
 };
 
 class net_hash {

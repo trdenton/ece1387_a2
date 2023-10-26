@@ -29,7 +29,7 @@ TEST(FileRead, cct1_check_cell_nets) {
 TEST(FileRead, cct1_check_net_pins) {
     circuit* c = new circuit("../data/cct1");
     net* n = c->get_net("12");
-    unordered_set<string> expected = {};
+    unordered_set<string> expected = {"3","4","8"};
     ASSERT_EQ(expected, n->get_cell_labels());
     ASSERT_EQ(n->label, "12");
     delete(c);

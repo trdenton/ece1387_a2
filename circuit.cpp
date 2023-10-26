@@ -85,7 +85,10 @@ circuit::circuit(string file) {
 }
 
 net* circuit::get_net(string label) {
-    return new net(label);
+    //net n(label);
+    //auto it = nets.find(n);
+    //return &n;
+    return new net("test");
 }
 
 bool circuit::fit(bool interactive) {
@@ -102,13 +105,17 @@ void circuit::add_net(string s) {
 }
 
 void circuit::add_cell_connections(vector<string> toks) {
-    cell* b = new cell(toks);
-    cells.push_back(b);
+    cell* c = new cell(toks);
+    cells.push_back(c);
 
-    vector<string> nets = std::vector<string>(toks.begin()+1,toks.end()-1);
-    for(string net : nets) {
+    vector<string> s_nets = std::vector<string>(toks.begin()+1,toks.end()-1);
+    for(string net : s_nets) {
         add_net(net);
-        b->add_net(net);
+        c->add_net(net);
+        //this->get_net(net)->add_cell(*c);
+        auto got = nets.find(net);
+        (got)->add_cell(*c);
+        //(nets.find(net))->add_cell(*c);
     }
 
 }
@@ -171,16 +178,13 @@ void cell::add_net(net& n) {
 ****/
 
 void net::add_cell(string s) {
+    cerr << "adding cell " << s << " to net " << label << endl;
     assert(s.length() > 0);
     cell_labels.insert(s);
 }
 
 void net::add_cell(cell& c) {
     add_cell(c.label);
-}
-
-vector<cell*> net::get_cells() {
-    return vector<cell*>();
 }
 
 net::net(string l) {
