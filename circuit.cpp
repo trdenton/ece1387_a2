@@ -76,6 +76,10 @@ circuit::circuit(string file) {
   }
 }
 
+net* circuit::get_net(string label) {
+    return new net(label);
+}
+
 bool circuit::fit(bool interactive) {
   return true;
 }
@@ -124,3 +128,8 @@ vector<int>* block::get_coords() {
 vector<string> block::get_nets() {
   return nets;
 }
+
+net::net(string l) {
+  label = l;
+}
+

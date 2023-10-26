@@ -27,9 +27,16 @@ class block {
   
 };
 
+class net {
+  public:
+    string label;
+    net(string l);
+};
+
 class circuit {
   private:
     vector<block*> blocks;
+    vector<net*> nets;
 
   public:
     circuit(string s);
@@ -41,6 +48,7 @@ class circuit {
     block* get_block(string label);
     void add_block_connections(vector<string> toks);
     void add_block_coords(vector<string> toks);
+    net* get_net(string label);
 };
 void circuit_wait_for_ui();
 void circuit_next_step();
