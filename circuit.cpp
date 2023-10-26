@@ -38,6 +38,12 @@ enum input_read_state {
     SECTION_2
 };
 
+/****
+*
+* circuit class functions
+*
+****/
+
 circuit::circuit(string file) {
     string line;
     ifstream infile (file);
@@ -122,6 +128,12 @@ cell* circuit::get_cell(string label) {
     return nullptr;
 }
 
+/****
+*
+* cell class functions
+*
+****/
+
 
 cell::cell(vector<string> s) {
     x = 0;
@@ -140,16 +152,22 @@ unordered_set<string> cell::get_net_labels() {
 }
 
 pair<int,int> cell::get_coords() {
-    //vector<int>* vec = new vector<int>(x,y);
     return pair<int,int>(x,y);
-    //vec->push_back(x);
-    //vec->push_back(y);
-    //return vec;
 }
 
-net::net(string l) {
-    label = l;
+void cell::add_net(string s) {
+    assert(s.length() > 0);
+    net_labels.insert(s); 
 }
+void cell::add_net(net& n) {
+    add_net(n.label);
+}
+
+/****
+*
+* net class functions
+*
+****/
 
 void net::add_cell(string s) {
     assert(s.length() > 0);
@@ -164,10 +182,6 @@ vector<cell*> net::get_cells() {
     return vector<cell*>();
 }
 
-void cell::add_net(string s) {
-    assert(s.length() > 0);
-    net_labels.insert(s); 
-}
-void cell::add_net(net& n) {
-    add_net(n.label);
+net::net(string l) {
+    label = l;
 }
