@@ -28,6 +28,7 @@ class net {
         }
         void add_cell(cell& n);
         void add_cell(string c);
+        unordered_set<string> get_cell_labels();
 };
 
 class net_hash {

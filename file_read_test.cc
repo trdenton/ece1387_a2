@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <vector>
+#include <unordered_set>
 #include <utility>
 #include "circuit.h"
 
@@ -20,12 +21,16 @@ TEST(FileRead, cct1_cells_coords) {
 TEST(FileRead, cct1_check_cell_nets) {
     circuit* c = new circuit("../data/cct1");
     cell* b = c->get_cell("24");
+    unordered_set<string> expected = {"12", "30", "27", "24", "6", "23", "26"};
+    ASSERT_EQ(expected, b->get_net_labels());
     delete(c);
 }
 
 TEST(FileRead, cct1_check_net_pins) {
     circuit* c = new circuit("../data/cct1");
     net* n = c->get_net("12");
+    unordered_set<string> expected = {};
+    ASSERT_EQ(expected, n->get_cell_labels());
     ASSERT_EQ(n->label, "12");
     delete(c);
 }

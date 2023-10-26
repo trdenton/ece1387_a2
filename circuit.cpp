@@ -108,6 +108,7 @@ void circuit::add_cell_connections(vector<string> toks) {
     vector<string> nets = std::vector<string>(toks.begin()+1,toks.end()-1);
     for(string net : nets) {
         add_net(net);
+        b->add_net(net);
     }
 
 }
@@ -184,4 +185,8 @@ vector<cell*> net::get_cells() {
 
 net::net(string l) {
     label = l;
+}
+
+unordered_set<string> net::get_cell_labels() {
+    return cell_labels;
 }
