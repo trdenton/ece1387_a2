@@ -13,9 +13,11 @@
 using namespace std;
 
 class block;
+class net_hash;
 
 class net {
     public:
+        float weight;
         string label;
         net(string l);
         vector<block*> get_blocks();
@@ -36,13 +38,17 @@ class block {
         std::unordered_set<net, net_hash> nets;
         int x;
         int y;
+        unordered_set<string> net_labels;
 
     public:
         string label;
         block(vector<string> s);
         void connect(block* other);
         void set_coords(int _x, int _y);
-        vector<int>* get_coords();
+        pair<int,int> get_coords();
+        unordered_set<string> get_net_labels();
+        void add_net(net& n);
+        void add_net(string s);
 
 };
 

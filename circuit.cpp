@@ -134,11 +134,16 @@ void block::set_coords(int _x, int _y) {
     y = _y;
 }
 
-vector<int>* block::get_coords() {
-    vector<int>* vec = new vector<int>();
-    vec->push_back(x);
-    vec->push_back(y);
-    return vec;
+unordered_set<string> block::get_net_labels() {
+    return net_labels;
+}
+
+pair<int,int> block::get_coords() {
+    //vector<int>* vec = new vector<int>(x,y);
+    return pair<int,int>(x,y);
+    //vec->push_back(x);
+    //vec->push_back(y);
+    //return vec;
 }
 
 net::net(string l) {
@@ -147,4 +152,11 @@ net::net(string l) {
 
 vector<block*> net::get_blocks() {
     return vector<block*>();
+}
+
+void block::add_net(string s) {
+   net_labels.insert(s); 
+}
+void block::add_net(net& n) {
+    add_net(n.label);
 }
