@@ -11,6 +11,7 @@
 #include <thread>
 #include <unistd.h>
 #include <condition_variable>
+#include <cassert>
 
 using namespace std; 
 
@@ -150,12 +151,22 @@ net::net(string l) {
     label = l;
 }
 
+void net::add_cell(string s) {
+    assert(s.length() > 0);
+    cell_labels.insert(s);
+}
+
+void net::add_cell(cell& c) {
+    add_cell(c.label);
+}
+
 vector<cell*> net::get_cells() {
     return vector<cell*>();
 }
 
 void cell::add_net(string s) {
-   net_labels.insert(s); 
+    assert(s.length() > 0);
+    net_labels.insert(s); 
 }
 void cell::add_net(net& n) {
     add_net(n.label);

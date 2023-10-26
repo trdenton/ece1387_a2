@@ -26,6 +26,8 @@ class net {
         bool operator==(const net& other) const {
             return this->label == other.label;
         }
+        void add_cell(cell& n);
+        void add_cell(string c);
 };
 
 class net_hash {
