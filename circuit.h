@@ -12,15 +12,17 @@
 
 using namespace std;
 
-class block;
+class cell;
 class net_hash;
 
 class net {
+    private:
+        unordered_set<string> cell_labels;
     public:
         float weight;
         string label;
         net(string l);
-        vector<block*> get_blocks();
+        vector<cell*> get_cells();
         bool operator==(const net& other) const {
             return this->label == other.label;
         }
@@ -33,7 +35,7 @@ class net_hash {
         }
 };
 
-class block {
+class cell {
     private:
         std::unordered_set<net, net_hash> nets;
         int x;
@@ -42,8 +44,8 @@ class block {
 
     public:
         string label;
-        block(vector<string> s);
-        void connect(block* other);
+        cell(vector<string> s);
+        void connect(cell* other);
         void set_coords(int _x, int _y);
         pair<int,int> get_coords();
         unordered_set<string> get_net_labels();
@@ -54,19 +56,19 @@ class block {
 
 class circuit {
     private:
-        vector<block*> blocks;
+        vector<cell*> cells;
         unordered_set<net, net_hash> nets;
 
     public:
         circuit(string s);
         ~circuit() {
         }
-        int get_n_blocks() { return blocks.size();}
+        int get_n_cells() { return cells.size();}
 
         bool fit(bool interactive);
-        block* get_block(string label);
-        void add_block_connections(vector<string> toks);
-        void add_block_coords(vector<string> toks);
+        cell* get_cell(string label);
+        void add_cell_connections(vector<string> toks);
+        void add_cell_coords(vector<string> toks);
         net* get_net(string label);
         void add_net(string s);
 };

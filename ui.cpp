@@ -13,7 +13,7 @@ void ui_click_handler (float x, float y);
 void ui_mouse_handler (float x, float y);
 void ui_key_handler(char c);
 
-float logic_block_width = 10.0;
+float logic_cell_width = 10.0;
 
 circuit* circ;
 

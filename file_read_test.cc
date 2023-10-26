@@ -4,12 +4,12 @@
 #include "circuit.h"
 
 // Basic file read sanity checks
-TEST(FileRead, cct1_blocks_coords) {
+TEST(FileRead, cct1_cells_coords) {
     circuit* c = new circuit("../data/cct1");
 
-    ASSERT_EQ(c->get_n_blocks(),26);
+    ASSERT_EQ(c->get_n_cells(),26);
 
-    block* b = c->get_block("24");
+    cell* b = c->get_cell("24");
     std::pair<int,int> coords = b->get_coords();
     ASSERT_EQ(std::get<0>(coords), 25);
     ASSERT_EQ(std::get<1>(coords), 22);
@@ -19,7 +19,7 @@ TEST(FileRead, cct1_blocks_coords) {
 
 TEST(FileRead, cct1_check_cell_nets) {
     circuit* c = new circuit("../data/cct1");
-    block* b = c->get_block("24");
+    cell* b = c->get_cell("24");
     delete(c);
 }
 

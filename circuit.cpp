@@ -59,7 +59,7 @@ circuit::circuit(string file) {
                         read_state = SECTION_2;
                         break;
                     }
-                    add_block_connections(vstrings);
+                    add_cell_connections(vstrings);
 
                     break;
                 case SECTION_2:
@@ -67,7 +67,7 @@ circuit::circuit(string file) {
                         done = true;
                         break;
                     }
-                    add_block_coords(vstrings);
+                    add_cell_coords(vstrings);
                     break;
             }
         }
@@ -94,9 +94,9 @@ void circuit::add_net(string s) {
     }
 }
 
-void circuit::add_block_connections(vector<string> toks) {
-    block* b = new block(toks);
-    blocks.push_back(b);
+void circuit::add_cell_connections(vector<string> toks) {
+    cell* b = new cell(toks);
+    cells.push_back(b);
 
     vector<string> nets = std::vector<string>(toks.begin()+1,toks.end()-1);
     for(string net : nets) {
@@ -105,15 +105,15 @@ void circuit::add_block_connections(vector<string> toks) {
 
 }
 
-void circuit::add_block_coords(vector<string> s) {
-    block* b = get_block(s[0]);
+void circuit::add_cell_coords(vector<string> s) {
+    cell* b = get_cell(s[0]);
     int x = stoi(s[1]);
     int y = stoi(s[2]);
     b->set_coords(x,y);
 }
 
-block* circuit::get_block(string label) {
-    for (auto b : blocks) {
+cell* circuit::get_cell(string label) {
+    for (auto b : cells) {
         if (b->label == label) {
             return b;
         }
@@ -122,23 +122,23 @@ block* circuit::get_block(string label) {
 }
 
 
-block::block(vector<string> s) {
+cell::cell(vector<string> s) {
     x = 0;
     y = 0;
     label = s[0];
     //nets = std::vector<string>(s.begin()+1,s.end()-1);
 }
 
-void block::set_coords(int _x, int _y) {
+void cell::set_coords(int _x, int _y) {
     x = _x;
     y = _y;
 }
 
-unordered_set<string> block::get_net_labels() {
+unordered_set<string> cell::get_net_labels() {
     return net_labels;
 }
 
-pair<int,int> block::get_coords() {
+pair<int,int> cell::get_coords() {
     //vector<int>* vec = new vector<int>(x,y);
     return pair<int,int>(x,y);
     //vec->push_back(x);
@@ -150,13 +150,13 @@ net::net(string l) {
     label = l;
 }
 
-vector<block*> net::get_blocks() {
-    return vector<block*>();
+vector<cell*> net::get_cells() {
+    return vector<cell*>();
 }
 
-void block::add_net(string s) {
+void cell::add_net(string s) {
    net_labels.insert(s); 
 }
-void block::add_net(net& n) {
+void cell::add_net(net& n) {
     add_net(n.label);
 }
