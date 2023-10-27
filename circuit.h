@@ -2,6 +2,7 @@
 #define __CIRCUIT_H__
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 #include <string>
 #include <iostream>
 #include <queue>
@@ -17,10 +18,11 @@ class net_hash;
 
 class net {
     private:
-        unordered_set<string> cell_labels;
+        unordered_set<string> mutable cell_labels;
     public:
-        float weight;
+        float mutable weight;
         string label;
+
         net(string l);
         unordered_set<string> get_cell_labels();
         bool operator==(const net& other) const {
@@ -39,7 +41,6 @@ class net_hash {
 
 class cell {
     private:
-        std::unordered_set<net, net_hash> nets;
         int x;
         int y;
         unordered_set<string> net_labels;
@@ -59,7 +60,7 @@ class cell {
 class circuit {
     private:
         vector<cell*> cells;
-        unordered_set<net, net_hash> nets;
+        unordered_map<string, net*> nets;
 
     public:
         circuit(string s);

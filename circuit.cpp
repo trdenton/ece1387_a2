@@ -88,7 +88,7 @@ net* circuit::get_net(string label) {
     //net n(label);
     //auto it = nets.find(n);
     //return &n;
-    return new net("test");
+    return nets[label];
 }
 
 bool circuit::fit(bool interactive) {
@@ -97,8 +97,8 @@ bool circuit::fit(bool interactive) {
 
 void circuit::add_net(string s) {
     net* n = new net(s);
-    if (nets.find(*n) == nets.end()) {
-        nets.insert(*n);
+    if (nets.find(s) == nets.end()) {
+        nets[s] = n;
     } else {
         delete(n);
     }
@@ -113,8 +113,7 @@ void circuit::add_cell_connections(vector<string> toks) {
         add_net(net);
         c->add_net(net);
         //this->get_net(net)->add_cell(*c);
-        auto got = nets.find(net);
-        (got)->add_cell(*c);
+        nets[net]->add_cell(*c);
         //(nets.find(net))->add_cell(*c);
     }
 
@@ -178,7 +177,6 @@ void cell::add_net(net& n) {
 ****/
 
 void net::add_cell(string s) {
-    cerr << "adding cell " << s << " to net " << label << endl;
     assert(s.length() > 0);
     cell_labels.insert(s);
 }
