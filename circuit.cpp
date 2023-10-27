@@ -179,7 +179,7 @@ void circuit::build_adjacency_matrix() {
             started_new_column = false;
         }
     }
-#if 1 
+#if 0 
     cerr << "checking by inspection...." << endl;
     cerr << "Ap: [ ";
     for(int i = 0; i < ap_idx; ++i) {
@@ -281,4 +281,8 @@ net::net(string l) {
 
 unordered_set<string> net::get_cell_labels() {
     return cell_labels;
+}
+
+int net::num_pins() {
+    return cell_labels.size();
 }

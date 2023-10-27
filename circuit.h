@@ -29,6 +29,7 @@ class net {
         }
         void add_cell(cell& n);
         void add_cell(string c);
+        int num_pins();
 };
 
 class net_hash {
