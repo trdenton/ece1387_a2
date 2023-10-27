@@ -154,9 +154,9 @@ void circuit::build_adjacency_matrix() {
 
     // stored in compressed sparse column format
     
-    int ap_idx=1, ai_idx=0;
+    int ap_idx=0, ai_idx=0, new_column_id=0;
+    bool started_new_column = true; // latches at most once per column
     for(int x = 0; x < ncells; ++x) {
-        bool inserted_this_column = false;
         for(int y = 0; y < ncells; ++y) {
             if (x==y)
                 continue; // no connections to itself
@@ -167,29 +167,32 @@ void circuit::build_adjacency_matrix() {
                 Ax[ai_idx] = 1.0;
                 Ai[ai_idx] = y;
                 ++ai_idx;
-                inserted_this_column = true;
+                if (!started_new_column) {
+                    started_new_column = true;
+                    new_column_id = ai_idx-1;
+                }
             }
         }
-        if (inserted_this_column) {
-            Ap[ap_idx] = ai_idx-1; // (this was already incremented)
+        if (started_new_column) {
+            Ap[ap_idx] = new_column_id;
             ++ap_idx;
+            started_new_column = false;
         }
     }
-#if 0 
+#if 1 
+    cerr << "checking by inspection...." << endl;
     cerr << "Ap: [ ";
     for(int i = 0; i < ap_idx; ++i) {
         cerr << Ap[i] << (i==ap_idx-1? "":", ");
     }
     cerr << " ]" << endl;
 
-    cerr << endl;
     cerr << "Ai: [ ";
     for(int i = 0; i < ai_idx; ++i) {
         cerr << Ai[i] << (i==ai_idx-1? "":", ");
     }
     cerr << " ]" << endl;
 
-    cerr << endl;
     cerr << "Ax: [ ";
     for(int i = 0; i < ai_idx; ++i) {
         cerr << Ax[i] << (i==ai_idx-1? "":", ");
