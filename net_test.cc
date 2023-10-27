@@ -30,7 +30,9 @@ TEST(Net, cct1_check_nets_not_in_common) {
 TEST(Net, cct1_check_net_n_pins) {
     circuit* c = new circuit("../data/cct1");
     net* n3 = c->get_net("3"); // should have 4 pins
+    net* n4 = c->get_net("4"); // should have 4 pins
 
     ASSERT_EQ(n3->num_pins(), 4);
+    ASSERT_EQ(n4->num_pins(), 2);
     delete(c);
 }
