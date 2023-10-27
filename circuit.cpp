@@ -172,21 +172,25 @@ void cell::add_net(net& n) {
 }
 
 bool cell::is_connected_to(cell* other) {
-    set<string> my_net_labels_ordered;
-    set<string> other_net_labels_ordered;
-
+    vector<string> my_net_labels_ordered;
+    vector<string> other_net_labels_ordered;
+    
     for (auto n : net_labels) {
-        my_net_labels_ordered.insert(n);
+        my_net_labels_ordered.push_back(n);
     }
     
     for (auto n : other->net_labels) {
-        other_net_labels_ordered.insert(n);
+        other_net_labels_ordered.push_back(n);
     }
+
+    sort(my_net_labels_ordered.begin(), my_net_labels_ordered.end());
+    sort(other_net_labels_ordered.begin(), other_net_labels_ordered.end());
+
     vector<string> intersection;
 
     set_intersection(my_net_labels_ordered.begin(), my_net_labels_ordered.end(),
                      other_net_labels_ordered.begin(), other_net_labels_ordered.end(),
-                     intersection.begin());
+                     back_inserter(intersection));
     return !intersection.empty();
 }
 
