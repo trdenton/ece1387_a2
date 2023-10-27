@@ -20,7 +20,6 @@ class net {
     private:
         unordered_set<string> mutable cell_labels;
     public:
-        float mutable weight;
         string label;
 
         net(string l);
@@ -54,6 +53,7 @@ class cell {
         unordered_set<string> get_net_labels();
         void add_net(net& n);
         void add_net(string s);
+        bool is_connected_to(cell* other);
 
 };
 

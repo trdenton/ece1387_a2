@@ -73,6 +73,7 @@ enable_testing()
 add_executable(
   unit_tests
   file_read_test.cc
+  net_test.cc
   circuit.cpp
 )
 

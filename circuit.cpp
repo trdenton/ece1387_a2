@@ -166,8 +166,28 @@ void cell::add_net(string s) {
     assert(s.length() > 0);
     net_labels.insert(s); 
 }
+
 void cell::add_net(net& n) {
     add_net(n.label);
+}
+
+bool cell::is_connected_to(cell* other) {
+    set<string> my_net_labels_ordered;
+    set<string> other_net_labels_ordered;
+
+    for (auto n : net_labels) {
+        my_net_labels_ordered.insert(n);
+    }
+    
+    for (auto n : other->net_labels) {
+        other_net_labels_ordered.insert(n);
+    }
+    vector<string> intersection;
+
+    set_intersection(my_net_labels_ordered.begin(), my_net_labels_ordered.end(),
+                     other_net_labels_ordered.begin(), other_net_labels_ordered.end(),
+                     intersection.begin());
+    return !intersection.empty();
 }
 
 /****
