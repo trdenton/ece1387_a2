@@ -61,6 +61,7 @@ class circuit {
     private:
         vector<cell*> cells;
         unordered_map<string, net*> nets;
+        void build_adjacency_matrix();
 
     public:
         circuit(string s);

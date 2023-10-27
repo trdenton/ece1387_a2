@@ -82,6 +82,7 @@ circuit::circuit(string file) {
     } else {
         spdlog::error("Could not open {}", file);
     }
+    build_adjacency_matrix();
 }
 
 net* circuit::get_net(string label) {
@@ -133,6 +134,68 @@ cell* circuit::get_cell(string label) {
         }
     }
     return nullptr;
+}
+
+void circuit::build_adjacency_matrix() {
+    int ncells = cells.size();
+    int max_size = ncells*(ncells/2);
+
+    int *Ap = new int[max_size];
+    int *Ai = new int[max_size];
+    fill(Ap,Ap+max_size,0);
+    fill(Ai,Ai+max_size,0);
+
+    double *Ax = new double[max_size];
+    fill(Ax,Ax+max_size,0.);
+    double *b = new double[ncells];
+    fill(b,b+ncells,0.);
+    double *x = new double[ncells];
+    fill(b,b+ncells,0.);
+
+    // stored in compressed sparse column format
+    
+    int ap_idx=1, ai_idx=0;
+    for(int x = 0; x < ncells; ++x) {
+        bool inserted_this_column = false;
+        for(int y = 0; y < ncells; ++y) {
+            if (x==y)
+                continue; // no connections to itself
+            cell* xcell = cells[x];
+            cell* ycell = cells[y];
+            if (xcell->is_connected_to(ycell)) {
+                // put clique weight in this cell location
+                Ax[ai_idx] = 1.0;
+                Ai[ai_idx] = y;
+                ++ai_idx;
+                inserted_this_column = true;
+            }
+        }
+        if (inserted_this_column) {
+            Ap[ap_idx] = ai_idx-1; // (this was already incremented)
+            ++ap_idx;
+        }
+    }
+#if 0 
+    cerr << "Ap: [ ";
+    for(int i = 0; i < ap_idx; ++i) {
+        cerr << Ap[i] << (i==ap_idx-1? "":", ");
+    }
+    cerr << " ]" << endl;
+
+    cerr << endl;
+    cerr << "Ai: [ ";
+    for(int i = 0; i < ai_idx; ++i) {
+        cerr << Ai[i] << (i==ai_idx-1? "":", ");
+    }
+    cerr << " ]" << endl;
+
+    cerr << endl;
+    cerr << "Ax: [ ";
+    for(int i = 0; i < ai_idx; ++i) {
+        cerr << Ax[i] << (i==ai_idx-1? "":", ");
+    }
+    cerr << " ]" << endl;
+#endif
 }
 
 /****
