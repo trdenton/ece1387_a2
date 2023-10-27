@@ -30,6 +30,7 @@ class net {
         void add_cell(cell& n);
         void add_cell(string c);
         int num_pins();
+        double get_weight();
 };
 
 class net_hash {

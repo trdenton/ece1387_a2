@@ -286,3 +286,7 @@ unordered_set<string> net::get_cell_labels() {
 int net::num_pins() {
     return cell_labels.size();
 }
+
+double net::get_weight() {
+    return (double)(num_pins()-1);
+}
