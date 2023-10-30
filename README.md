@@ -23,3 +23,25 @@ so we can probably get by with this simpler approach
 next steps (oct 27 2023)
 - easier: calculate the clique weight per net (ie. to figure out wi,j) 
 - less easy: extrapolate the relation of w_i,j and build the correct matrix
+
+Px = wij(xi-xj)^2
+
+2wij(xi-xj)
+
+
+so C is the same as b for some reason
+
+the elements of Q are as such:
+
+qi,i (diagonal) is the sum of all weights connected to that node
+qi,j is -wi,j
+
+Ci = wiz\* xz if xi connects to fixed cell xz
+
+
+so, things to do next,
+-function to sum all weights connecting to a block
+-populate q(x)
+-function to determine if a given cell connects to a fixed cell
+-populate C
+
