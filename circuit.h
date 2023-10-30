@@ -77,6 +77,7 @@ class circuit {
         void add_cell_coords(vector<string> toks);
         net* get_net(string label);
         void add_net(string s);
+        double sum_all_connected_weights(cell* c);
 };
 void circuit_wait_for_ui();
 void circuit_next_step();

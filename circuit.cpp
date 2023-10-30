@@ -113,9 +113,7 @@ void circuit::add_cell_connections(vector<string> toks) {
     for(string net : s_nets) {
         add_net(net);
         c->add_net(net);
-        //this->get_net(net)->add_cell(*c);
         nets[net]->add_cell(*c);
-        //(nets.find(net))->add_cell(*c);
     }
 
 }
@@ -258,6 +256,17 @@ bool cell::is_connected_to(cell* other) {
                      other_net_labels_ordered.begin(), other_net_labels_ordered.end(),
                      back_inserter(intersection));
     return !intersection.empty();
+}
+
+double circuit::sum_all_connected_weights(cell* c) {
+    double result = 0.0;
+    
+    for (auto& s : c->get_net_labels()) {
+        net* n = get_net(s);
+        result += n->get_weight();
+    }
+
+    return result;
 }
 
 /****
