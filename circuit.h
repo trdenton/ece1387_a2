@@ -56,7 +56,7 @@ class cell {
         void add_net(net& n);
         void add_net(string s);
         bool is_connected_to(cell* other);
-
+        string get_mutual_net_label(cell* other);
 };
 
 class circuit {
@@ -78,6 +78,7 @@ class circuit {
         net* get_net(string label);
         void add_net(string s);
         double sum_all_connected_weights(cell* c);
+        double get_clique_weight(cell* c1, cell* c2);
 };
 void circuit_wait_for_ui();
 void circuit_next_step();

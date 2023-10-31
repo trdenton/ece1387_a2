@@ -17,6 +17,7 @@ using namespace std;
 
 condition_variable cv;
 mutex cv_m;
+const string NO_MUTUAL_LABEL = "NO_MUTUAL_LABEL";
 int update_sig = 0;
 
 void circuit_wait_for_ui() {
@@ -162,7 +163,7 @@ void circuit::build_adjacency_matrix() {
             cell* ycell = cells[y];
             if (xcell->is_connected_to(ycell)) {
                 // put clique weight in this cell location
-                Ax[ai_idx] = 1.0;
+                Ax[ai_idx] = get_clique_weight(xcell,ycell);
                 Ai[ai_idx] = y;
                 ++ai_idx;
                 if (!started_new_column) {
@@ -199,6 +200,12 @@ void circuit::build_adjacency_matrix() {
 #endif
 }
 
+double circuit::get_clique_weight(cell* c1, cell* c2) {
+    // need to get the common net
+    string net_label = c1->get_mutual_net_label(c2);
+    net* n = get_net(net_label);
+    return n->get_weight();
+}
 /****
 *
 * cell class functions
@@ -236,6 +243,10 @@ void cell::add_net(net& n) {
 }
 
 bool cell::is_connected_to(cell* other) {
+    return (get_mutual_net_label(other) != NO_MUTUAL_LABEL);
+}
+
+string cell::get_mutual_net_label(cell* other) {
     vector<string> my_net_labels_ordered;
     vector<string> other_net_labels_ordered;
     
@@ -255,7 +266,11 @@ bool cell::is_connected_to(cell* other) {
     set_intersection(my_net_labels_ordered.begin(), my_net_labels_ordered.end(),
                      other_net_labels_ordered.begin(), other_net_labels_ordered.end(),
                      back_inserter(intersection));
-    return !intersection.empty();
+    if (intersection.empty()) {
+        return NO_MUTUAL_LABEL;
+    } else {
+        return intersection[0];
+    }
 }
 
 double circuit::sum_all_connected_weights(cell* c) {
