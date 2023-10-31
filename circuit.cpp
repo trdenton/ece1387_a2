@@ -137,7 +137,7 @@ cell* circuit::get_cell(string label) {
 
 void circuit::build_adjacency_matrix() {
     int ncells = cells.size();
-    int max_size = ncells*(ncells/2);
+    int max_size = 1+(ncells*ncells)/2;
 
     int *Ap = new int[max_size];
     int *Ai = new int[max_size];
@@ -157,19 +157,24 @@ void circuit::build_adjacency_matrix() {
     bool started_new_column = true; // latches at most once per column
     for(int x = 0; x < ncells; ++x) {
         for(int y = 0; y < ncells; ++y) {
-            if (x==y)
-                continue; // no connections to itself
             cell* xcell = cells[x];
             cell* ycell = cells[y];
-            if (xcell->is_connected_to(ycell)) {
-                // put clique weight in this cell location
-                Ax[ai_idx] = get_clique_weight(xcell,ycell);
-                Ai[ai_idx] = y;
-                ++ai_idx;
-                if (!started_new_column) {
-                    started_new_column = true;
-                    new_column_id = ai_idx-1;
-                }
+            double val = 0.;
+
+            if (x==y)
+                val = sum_all_connected_weights(xcell);
+            else if (xcell->is_connected_to(ycell))
+                val = -get_clique_weight(xcell,ycell);
+            else
+                continue;
+
+            // put clique weight in this cell location
+            Ax[ai_idx] = val;
+            Ai[ai_idx] = y;
+            ++ai_idx;
+            if (!started_new_column) {
+                started_new_column = true;
+                new_column_id = ai_idx-1;
             }
         }
         if (started_new_column) {

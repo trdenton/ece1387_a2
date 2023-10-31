@@ -110,6 +110,7 @@ int main(int n, char** args) {
     test_suitesparse();
 
     circuit* circ = new circuit(file);
+    #if 0
     thread t1(route_thread, circ, step);
 
     if (!interactive)
@@ -121,6 +122,7 @@ int main(int n, char** args) {
         ui_teardown();
         t1.join();
     }
+    #endif
 
     spdlog::info("Exiting");
     delete(circ);
