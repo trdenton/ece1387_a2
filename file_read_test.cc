@@ -15,15 +15,7 @@ TEST(FileRead, cct1_cells_coords) {
     ASSERT_EQ(std::get<0>(coords), 25);
     ASSERT_EQ(std::get<1>(coords), 22);
 
-    delete(c);
-}
-
-TEST(FileRead, cct1_check_cell_nets) {
-    circuit* c = new circuit("../data/cct1");
-    cell* b = c->get_cell("24");
-    unordered_set<string> expected = {"12", "30", "27", "24", "6", "23", "26"};
-    ASSERT_EQ(expected, b->get_net_labels());
-    delete(c);
+    delete c;
 }
 
 TEST(FileRead, cct1_check_net_pins) {
@@ -32,5 +24,14 @@ TEST(FileRead, cct1_check_net_pins) {
     unordered_set<string> expected = {"3","4","8","13","18","23","24","1"};
     ASSERT_EQ(n->label, "12");
     ASSERT_EQ(expected, n->get_cell_labels());
-    delete(c);
+    delete c;
 }
+
+TEST(FileRead, cct1_check_cell_nets) {
+    circuit* c = new circuit("../data/cct1");
+    cell* b = c->get_cell("24");
+    unordered_set<string> expected = {"12", "30", "27", "24", "6", "23", "26"};
+    ASSERT_EQ(expected, b->get_net_labels());
+    delete c;
+}
+

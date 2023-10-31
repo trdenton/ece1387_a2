@@ -61,16 +61,26 @@ class cell {
         bool is_fixed();
 };
 
+struct adjacency_matrix {
+    vector<int> Ap;
+    vector<int> Ai;
+    vector<double> Ax;
+
+    int* get_Ap_ss();
+    int* get_Ai_ss();
+    double* get_Ax_ss();
+};
+
 class circuit {
     private:
+        adjacency_matrix* Q;
         vector<cell*> cells;
         unordered_map<string, net*> nets;
         void build_adjacency_matrix();
 
     public:
         circuit(string s);
-        ~circuit() {
-        }
+        ~circuit();
         int get_n_cells() { return cells.size();}
 
         bool fit(bool interactive);
@@ -81,6 +91,7 @@ class circuit {
         void add_net(string s);
         double sum_all_connected_weights(cell* c);
         double get_clique_weight(cell* c1, cell* c2);
+        adjacency_matrix* get_adjacency_matrix();
 };
 void circuit_wait_for_ui();
 void circuit_next_step();

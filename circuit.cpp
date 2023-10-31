@@ -137,24 +137,15 @@ cell* circuit::get_cell(string label) {
 
 void circuit::build_adjacency_matrix() {
     int ncells = cells.size();
-    int max_size = 1+(ncells*ncells)/2;
-
-    int *Ap = new int[max_size];
-    int *Ai = new int[max_size];
-    fill(Ap,Ap+max_size,0);
-    fill(Ai,Ai+max_size,0);
-
-    double *Ax = new double[max_size];
-    fill(Ax,Ax+max_size,0.);
-    double *b = new double[ncells];
-    fill(b,b+ncells,0.);
-    double *x = new double[ncells];
-    fill(b,b+ncells,0.);
+    Q = new adjacency_matrix();
 
     // stored in compressed sparse column format
     
     int ap_idx=0, ai_idx=0, new_column_id=0;
     bool started_new_column = true; // latches at most once per column
+    // cerr << "ncells " << ncells << endl;
+    // cerr << "maxn " << 1+(ncells*ncells)/2 << endl;
+    // cerr << "ai_idx\tap_idx"<<endl;
     for(int x = 0; x < ncells; ++x) {
         for(int y = 0; y < ncells; ++y) {
             cell* xcell = cells[x];
@@ -169,17 +160,19 @@ void circuit::build_adjacency_matrix() {
                 continue;
 
             // put clique weight in this cell location
-            Ax[ai_idx] = val;
-            Ai[ai_idx] = y;
+            Q->Ax.push_back(val);
+            Q->Ai.push_back(y);
             ++ai_idx;
             if (!started_new_column) {
                 started_new_column = true;
                 new_column_id = ai_idx-1;
             }
+            //cerr << ai_idx << '\t' << ap_idx << endl;
         }
         if (started_new_column) {
-            Ap[ap_idx] = new_column_id;
+            Q->Ap.push_back(new_column_id);
             ++ap_idx;
+            //cerr << ai_idx << '\t' << ap_idx << endl;
             started_new_column = false;
         }
     }
@@ -187,22 +180,26 @@ void circuit::build_adjacency_matrix() {
     cerr << "checking by inspection...." << endl;
     cerr << "Ap: [ ";
     for(int i = 0; i < ap_idx; ++i) {
-        cerr << Ap[i] << (i==ap_idx-1? "":", ");
+        cerr << Q->Ap[i] << (i==ap_idx-1? "":", ");
     }
     cerr << " ]" << endl;
 
     cerr << "Ai: [ ";
     for(int i = 0; i < ai_idx; ++i) {
-        cerr << Ai[i] << (i==ai_idx-1? "":", ");
+        cerr << Q->Ai[i] << (i==ai_idx-1? "":", ");
     }
     cerr << " ]" << endl;
 
     cerr << "Ax: [ ";
     for(int i = 0; i < ai_idx; ++i) {
-        cerr << Ax[i] << (i==ai_idx-1? "":", ");
+        cerr << Q->Ax[i] << (i==ai_idx-1? "":", ");
     }
     cerr << " ]" << endl;
 #endif
+}
+
+adjacency_matrix* circuit::get_adjacency_matrix() {
+    return Q;
 }
 
 double circuit::get_clique_weight(cell* c1, cell* c2) {
@@ -217,6 +214,9 @@ double circuit::get_clique_weight(cell* c1, cell* c2) {
 *
 ****/
 
+bool cell::is_fixed() {
+    return fixed;
+}
 
 cell::cell(vector<string> s) {
     x = 0;
@@ -291,8 +291,9 @@ double circuit::sum_all_connected_weights(cell* c) {
     return result;
 }
 
-bool cell::is_fixed() {
-    return fixed;
+circuit::~circuit() {
+    if (Q)
+        delete(Q);
 }
 
 /****
@@ -325,3 +326,9 @@ int net::num_pins() {
 double net::get_weight() {
     return (double)(num_pins()-1);
 }
+
+/****
+*
+* adjacency_matrix struct functions
+*
+****/

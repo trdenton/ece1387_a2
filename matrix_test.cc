@@ -20,3 +20,28 @@ TEST(Matrix, cct1_sum_all_weights) {
 
     delete(c);
 }
+
+TEST(Matrix, cct_mat_test) {
+    circuit* c = new circuit("../data/cct_inspect_csc");
+    adjacency_matrix* Q = c->get_adjacency_matrix();
+    ASSERT_EQ(Q->Ap[0], 0);
+    ASSERT_EQ(Q->Ap[1], 2);
+    ASSERT_EQ(Q->Ap[2], 5);
+    
+    ASSERT_EQ(Q->Ai[0], 0);
+    ASSERT_EQ(Q->Ai[1], 1);
+    ASSERT_EQ(Q->Ai[2], 0);
+    ASSERT_EQ(Q->Ai[3], 1);
+    ASSERT_EQ(Q->Ai[4], 2);
+    ASSERT_EQ(Q->Ai[5], 1);
+    ASSERT_EQ(Q->Ai[6], 2);
+
+    ASSERT_EQ(Q->Ax[0], 1);
+    ASSERT_EQ(Q->Ax[1], -1);
+    ASSERT_EQ(Q->Ax[2], -1);
+    ASSERT_EQ(Q->Ax[3], 2);
+    ASSERT_EQ(Q->Ax[4], -1);
+    ASSERT_EQ(Q->Ax[5], -1);
+    ASSERT_EQ(Q->Ax[6], 1);
+    delete(c);
+}
