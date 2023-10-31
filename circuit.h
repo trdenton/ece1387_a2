@@ -44,19 +44,21 @@ class cell {
     private:
         int x;
         int y;
+        bool fixed;
         unordered_set<string> net_labels;
 
     public:
         string label;
         cell(vector<string> s);
         void connect(cell* other);
-        void set_coords(int _x, int _y);
+        void set_coords(int _x, int _y, bool _fixed=false);
         pair<int,int> get_coords();
         unordered_set<string> get_net_labels();
         void add_net(net& n);
         void add_net(string s);
         bool is_connected_to(cell* other);
         string get_mutual_net_label(cell* other);
+        bool is_fixed();
 };
 
 class circuit {
@@ -74,7 +76,7 @@ class circuit {
         bool fit(bool interactive);
         cell* get_cell(string label);
         void add_cell_connections(vector<string> toks);
-        void add_cell_coords(vector<string> toks);
+        void add_cell_fixed_coords(vector<string> toks);
         net* get_net(string label);
         void add_net(string s);
         double sum_all_connected_weights(cell* c);

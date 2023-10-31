@@ -75,7 +75,7 @@ circuit::circuit(string file) {
                         done = true;
                         break;
                     }
-                    add_cell_coords(vstrings);
+                    add_cell_fixed_coords(vstrings);
                     break;
             }
         }
@@ -119,11 +119,11 @@ void circuit::add_cell_connections(vector<string> toks) {
 
 }
 
-void circuit::add_cell_coords(vector<string> s) {
-    cell* b = get_cell(s[0]);
+void circuit::add_cell_fixed_coords(vector<string> s) {
+    cell* c = get_cell(s[0]);
     int x = stoi(s[1]);
     int y = stoi(s[2]);
-    b->set_coords(x,y);
+    c->set_coords(x,y,true);
 }
 
 cell* circuit::get_cell(string label) {
@@ -217,12 +217,14 @@ cell::cell(vector<string> s) {
     x = 0;
     y = 0;
     label = s[0];
+    fixed = false;
     //nets = std::vector<string>(s.begin()+1,s.end()-1);
 }
 
-void cell::set_coords(int _x, int _y) {
+void cell::set_coords(int _x, int _y, bool _fixed) {
     x = _x;
     y = _y;
+    fixed = _fixed;
 }
 
 unordered_set<string> cell::get_net_labels() {
@@ -282,6 +284,10 @@ double circuit::sum_all_connected_weights(cell* c) {
     }
 
     return result;
+}
+
+bool cell::is_fixed() {
+    return fixed;
 }
 
 /****
