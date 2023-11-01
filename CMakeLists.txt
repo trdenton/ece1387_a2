@@ -113,6 +113,10 @@ target_link_libraries(
   GTest::gtest_main
   spdlog::spdlog
 )
+target_compile_definitions(
+  unit_tests
+  PUBLIC GTEST
+)
 
 include(GoogleTest)
 gtest_discover_tests(unit_tests)

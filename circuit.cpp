@@ -13,6 +13,10 @@
 #include <condition_variable>
 #include <cassert>
 
+#ifndef GTEST
+#include "umfpack.h"
+#endif
+
 using namespace std; 
 
 condition_variable cv;
@@ -194,8 +198,10 @@ void circuit::build_adjacency_matrix() {
         }
         ++Q->n;
     }
-#if 0 
+    Q->Ap.push_back(Q->Ax.size());
+#if 1 
     cerr << "checking by inspection...." << endl;
+    cerr << "n: " << Q->n << endl;
     cerr << "Ap: [ ";
     for(auto& i : Q->Ap) {
         cerr << i << ", ";
@@ -218,6 +224,38 @@ void circuit::build_adjacency_matrix() {
 
 adjacency_matrix* circuit::get_adjacency_matrix() {
     return Q;
+}
+
+void circuit::iter() {
+    #ifndef GTEST
+    double *null = (double *) NULL ;
+    double* x = new double[Q->n];
+    int i ;
+    void *Symbolic, *Numeric ;
+    int rc;
+
+    rc = umfpack_di_symbolic (Q->n, Q->n, Q->get_Ap_ss(), Q->get_Ai_ss(), Q->get_Ax_ss(), &Symbolic, null, null) ;
+    if (rc != UMFPACK_OK) {
+        spdlog::error("Error in umfpack_di_symbolic: {}", rc);
+    }
+
+    rc = umfpack_di_numeric (Q->get_Ap_ss(), Q->get_Ai_ss(), Q->get_Ax_ss(), Symbolic, &Numeric, null, null) ;
+    if (rc != UMFPACK_OK) {
+        spdlog::error("Error in umfpack_di_numeric: {}", rc);
+    }
+
+    umfpack_di_free_symbolic (&Symbolic) ;
+
+    rc = umfpack_di_solve (UMFPACK_A, Q->get_Ap_ss(), Q->get_Ai_ss(), Q->get_Ax_ss(), x, Q->get_C_ss(), Numeric, null, null) ;
+    if (rc != UMFPACK_OK) {
+        spdlog::error("Error in umfpack_di_solve: {}", rc);
+    }
+
+    umfpack_di_free_numeric (&Numeric) ;
+
+    for (i = 0 ; i < Q->n ; i++) printf ("x [%d] = %g\n", i, x [i]) ;
+    delete[] x;
+    #endif
 }
 
 double circuit::get_clique_weight(cell* c1, cell* c2) {

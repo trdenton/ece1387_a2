@@ -27,6 +27,7 @@ TEST(Matrix, cct_mat_test) {
     ASSERT_EQ(Q->Ap[0], 0);
     ASSERT_EQ(Q->Ap[1], 2);
     ASSERT_EQ(Q->Ap[2], 5);
+    ASSERT_EQ(Q->Ap[3], 7);
     
     ASSERT_EQ(Q->Ai[0], 0);
     ASSERT_EQ(Q->Ai[1], 1);

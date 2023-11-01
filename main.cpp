@@ -107,9 +107,10 @@ int main(int n, char** args) {
 
     print_version();
 
-    test_suitesparse();
+    //test_suitesparse();
 
     circuit* circ = new circuit(file);
+    circ->iter();
     #if 0
     thread t1(route_thread, circ, step);
 

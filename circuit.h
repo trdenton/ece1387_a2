@@ -103,6 +103,7 @@ class circuit {
         adjacency_matrix* get_adjacency_matrix();
         bool connects_to_fixed_cell(cell* c1);
         cell* get_connected_fixed_cell(cell* c1);
+        void iter();
 };
 void circuit_wait_for_ui();
 void circuit_next_step();
