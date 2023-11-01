@@ -45,3 +45,10 @@ so, things to do next,
 -function to determine if a given cell connects to a fixed cell
 -populate C
 
+[the above are done]
+
+things to do next:
+
+- draw cells, rats net
+- attempt to spread via fixed net weight increase
+
