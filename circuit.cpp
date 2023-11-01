@@ -332,3 +332,15 @@ double net::get_weight() {
 * adjacency_matrix struct functions
 *
 ****/
+
+int* adjacency_matrix::get_Ap_ss() {
+    return &Ap[0];
+}
+
+int* adjacency_matrix::get_Ai_ss() {
+    return &Ai[0];
+}
+
+double* adjacency_matrix::get_Ax_ss() {
+    return &Ax[0];
+}
