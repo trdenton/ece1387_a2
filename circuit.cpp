@@ -145,13 +145,15 @@ void circuit::build_solver_rhs() {
     for(auto& c : cells) {
         if (c->is_fixed())
             continue;
+        double xval=0., yval=0.;
         if (connects_to_fixed_cell(c)) {
             cell* other = get_connected_fixed_cell(c);
             pair<int,int> coords = other->get_coords();
-            Q->C.push_back(get_clique_weight(c,other)*get<0>(coords));
-        } else {
-            Q->C.push_back(0.);
-        }
+            xval = get_clique_weight(c,other)*get<0>(coords);
+            yval = get_clique_weight(c,other)*get<1>(coords);
+        } 
+        Q->Cx.push_back(xval);
+        Q->Cy.push_back(yval);
     }
 }
 
@@ -226,13 +228,11 @@ solver_matrix* circuit::get_solver_matrix() {
     return Q;
 }
 
-void circuit::iter() {
+void circuit::umfpack(enum axis ax, double* res) {
     #ifndef GTEST
-    double *null = (double *) NULL ;
-    double* x = new double[Q->n];
-    int i ;
-    void *Symbolic, *Numeric ;
     int rc;
+    double *null = (double *) NULL ;
+    void *Symbolic, *Numeric ;
 
     rc = umfpack_di_symbolic (Q->n, Q->n, Q->get_Ap_ss(), Q->get_Ai_ss(), Q->get_Ax_ss(), &Symbolic, null, null) ;
     if (rc != UMFPACK_OK) {
@@ -246,16 +246,26 @@ void circuit::iter() {
 
     umfpack_di_free_symbolic (&Symbolic) ;
 
-    rc = umfpack_di_solve (UMFPACK_A, Q->get_Ap_ss(), Q->get_Ai_ss(), Q->get_Ax_ss(), x, Q->get_C_ss(), Numeric, null, null) ;
+    rc = umfpack_di_solve (UMFPACK_A, Q->get_Ap_ss(), Q->get_Ai_ss(), Q->get_Ax_ss(), res, Q->get_C_ss(ax), Numeric, null, null) ;
     if (rc != UMFPACK_OK) {
         spdlog::error("Error in umfpack_di_solve: {}", rc);
     }
 
     umfpack_di_free_numeric (&Numeric) ;
-
-    for (i = 0 ; i < Q->n ; i++) printf ("x [%d] = %g\n", i, x [i]) ;
-    delete[] x;
     #endif
+}
+
+void circuit::iter() {
+    double* x = new double[Q->n];
+    double* y = new double[Q->n];
+    int i ;
+    
+    umfpack(X, x);
+    umfpack(Y, y);
+
+    for (i = 0 ; i < Q->n ; i++) printf ("x,y [%d] = %g,%g\n", i, x[i], y[i]) ;
+    delete[] x;
+    delete[] y;
 }
 
 double circuit::get_clique_weight(cell* c1, cell* c2) {
@@ -419,6 +429,10 @@ double* solver_matrix::get_Ax_ss() {
     return &Ax[0];
 }
 
-double* solver_matrix::get_C_ss() {
-    return &C[0];
+double* solver_matrix::get_C_ss(enum axis ax) {
+    if (ax == X) 
+        return &Cx[0];
+    if (ax == Y)
+        return &Cy[0];
+    spdlog::error("Received invalid axis {}", ax);
 }

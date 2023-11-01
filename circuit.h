@@ -13,8 +13,12 @@
 
 using namespace std;
 
+enum axis {
+    X,
+    Y
+};
+
 class cell;
-class net_hash;
 
 class net {
     private:
@@ -31,13 +35,6 @@ class net {
         void add_cell(string c);
         int num_pins();
         double get_weight();
-};
-
-class net_hash {
-    public:
-        size_t operator() (const net& n) const {
-            return n.label.length();
-        }
 };
 
 class cell {
@@ -69,12 +66,13 @@ struct solver_matrix {
     vector<double> Ax;
 
     // the RHS of the equation
-    vector<double> C;
+    vector<double> Cx;
+    vector<double> Cy;
 
     int* get_Ap_ss();
     int* get_Ai_ss();
     double* get_Ax_ss();
-    double* get_C_ss();
+    double* get_C_ss(enum axis);
     
 };
 
@@ -86,6 +84,7 @@ class circuit {
         unordered_map<string, net*> nets;
         void build_solver_matrix();
         void build_solver_rhs();
+        void umfpack(enum axis ax, double* res);
 
     public:
         circuit(string s);
