@@ -61,9 +61,9 @@ class cell {
         bool is_fixed();
 };
 
-struct adjacency_matrix {
+struct solver_matrix {
     int n;
-    // the actual adjacency matrix
+    // the actual solver matrix
     vector<int> Ap;
     vector<int> Ai;
     vector<double> Ax;
@@ -80,11 +80,11 @@ struct adjacency_matrix {
 
 class circuit {
     private:
-        adjacency_matrix* Q;
+        solver_matrix* Q;
         vector<cell*> cells;
         unordered_set<string> fixed_cell_labels;
         unordered_map<string, net*> nets;
-        void build_adjacency_matrix();
+        void build_solver_matrix();
         void build_rhs();
 
     public:
@@ -100,7 +100,7 @@ class circuit {
         void add_net(string s);
         double sum_all_connected_weights(cell* c);
         double get_clique_weight(cell* c1, cell* c2);
-        adjacency_matrix* get_adjacency_matrix();
+        solver_matrix* get_solver_matrix();
         bool connects_to_fixed_cell(cell* c1);
         cell* get_connected_fixed_cell(cell* c1);
         void iter();

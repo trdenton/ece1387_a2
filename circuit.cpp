@@ -87,7 +87,7 @@ circuit::circuit(string file) {
     } else {
         spdlog::error("Could not open {}", file);
     }
-    build_adjacency_matrix();
+    build_solver_matrix();
     build_rhs();
 }
 
@@ -155,9 +155,9 @@ void circuit::build_rhs() {
     }
 }
 
-void circuit::build_adjacency_matrix() {
+void circuit::build_solver_matrix() {
     int ncells = cells.size();
-    Q = new adjacency_matrix();
+    Q = new solver_matrix();
     Q->n = 0;
 
     // stored in compressed sparse column format
@@ -199,7 +199,7 @@ void circuit::build_adjacency_matrix() {
         ++Q->n;
     }
     Q->Ap.push_back(Q->Ax.size());
-#if 1 
+#if 0 
     cerr << "checking by inspection...." << endl;
     cerr << "n: " << Q->n << endl;
     cerr << "Ap: [ ";
@@ -222,7 +222,7 @@ void circuit::build_adjacency_matrix() {
 #endif
 }
 
-adjacency_matrix* circuit::get_adjacency_matrix() {
+solver_matrix* circuit::get_solver_matrix() {
     return Q;
 }
 
@@ -403,22 +403,22 @@ double net::get_weight() {
 
 /****
 *
-* adjacency_matrix struct functions
+* solver_matrix struct functions
 *
 ****/
 
-int* adjacency_matrix::get_Ap_ss() {
+int* solver_matrix::get_Ap_ss() {
     return &Ap[0];
 }
 
-int* adjacency_matrix::get_Ai_ss() {
+int* solver_matrix::get_Ai_ss() {
     return &Ai[0];
 }
 
-double* adjacency_matrix::get_Ax_ss() {
+double* solver_matrix::get_Ax_ss() {
     return &Ax[0];
 }
 
-double* adjacency_matrix::get_C_ss() {
+double* solver_matrix::get_C_ss() {
     return &C[0];
 }

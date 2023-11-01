@@ -23,7 +23,7 @@ TEST(Matrix, cct1_sum_all_weights) {
 
 TEST(Matrix, cct_mat_test) {
     circuit* c = new circuit("../data/cct_inspect_csc");
-    adjacency_matrix* Q = c->get_adjacency_matrix();
+    solver_matrix* Q = c->get_solver_matrix();
     ASSERT_EQ(Q->Ap[0], 0);
     ASSERT_EQ(Q->Ap[1], 2);
     ASSERT_EQ(Q->Ap[2], 5);
@@ -49,7 +49,7 @@ TEST(Matrix, cct_mat_test) {
 
 TEST(Matrix, cct_rhs_test) {
     circuit* circ = new circuit("../data/cct_inspect_csc");
-    adjacency_matrix* Q = circ->get_adjacency_matrix();
+    solver_matrix* Q = circ->get_solver_matrix();
     double* C = Q->get_C_ss();
     ASSERT_EQ(Q->C.size(),3);
     ASSERT_EQ(C[0], 0.);
@@ -60,7 +60,7 @@ TEST(Matrix, cct_rhs_test) {
 
 TEST(Matrix, cct_num_movable_elems) {
     circuit* circ = new circuit("../data/cct_inspect_csc");
-    adjacency_matrix* Q = circ->get_adjacency_matrix();
+    solver_matrix* Q = circ->get_solver_matrix();
     ASSERT_EQ(Q->n, 3);
     delete circ;
 }
