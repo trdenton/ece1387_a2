@@ -50,8 +50,10 @@ TEST(Matrix, cct_rhs_test) {
     circuit* circ = new circuit("../data/cct_inspect_csc");
     adjacency_matrix* Q = circ->get_adjacency_matrix();
     double* C = Q->get_C_ss();
-    //ASSERT_EQ(C[0], 0);
-    //ASSERT_EQ(C[1], 0);
+    ASSERT_EQ(Q->C.size(),3);
+    ASSERT_EQ(C[0], 0.);
+    ASSERT_EQ(C[1], 0.);
+    ASSERT_EQ(C[2], 1.);
     delete circ;
 }
 
@@ -59,7 +61,5 @@ TEST(Matrix, cct_num_movable_elems) {
     circuit* circ = new circuit("../data/cct_inspect_csc");
     adjacency_matrix* Q = circ->get_adjacency_matrix();
     ASSERT_EQ(Q->n, 3);
-    //ASSERT_EQ(C[0], 0);
-    //ASSERT_EQ(C[1], 0);
     delete circ;
 }

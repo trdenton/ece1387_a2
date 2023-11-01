@@ -139,6 +139,8 @@ cell* circuit::get_cell(string label) {
 
 void circuit::build_rhs() {
     for(auto& c : cells) {
+        if (c->is_fixed())
+            continue;
         if (connects_to_fixed_cell(c)) {
             cell* other = get_connected_fixed_cell(c);
             pair<int,int> coords = other->get_coords();
