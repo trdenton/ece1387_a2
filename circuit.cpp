@@ -181,7 +181,6 @@ void circuit::build_adjacency_matrix() {
             else
                 continue;
 
-            cerr << "val is " << val << endl;
             // put clique weight in this cell location
             if (last_pushed_x != Q->n) {
                 last_pushed_x = Q->n;
@@ -193,7 +192,7 @@ void circuit::build_adjacency_matrix() {
         }
         ++Q->n;
     }
-#if 1 
+#if 0 
     cerr << "checking by inspection...." << endl;
     cerr << "Ap: [ ";
     for(auto& i : Q->Ap) {
