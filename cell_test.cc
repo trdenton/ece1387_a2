@@ -14,3 +14,17 @@ TEST(Cell, cct1_fixed_nets) {
 
     delete(c);
 }
+
+TEST(Cell, cct1_connects_to_fixed_cell) {
+    circuit* c = new circuit("../data/cct1");
+    cell* c4 = c->get_cell("4");
+    ASSERT_TRUE(c->connects_to_fixed_cell(c4));
+    delete(c);
+}
+
+TEST(Cell, cct1_no_connect_to_fixed_cell) {
+    circuit* c = new circuit("../data/cct_no_connect_to_fixed");
+    cell* c3 = c->get_cell("3");
+    ASSERT_FALSE(c->connects_to_fixed_cell(c3));
+    delete(c);
+}

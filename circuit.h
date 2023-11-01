@@ -76,6 +76,7 @@ class circuit {
     private:
         adjacency_matrix* Q;
         vector<cell*> cells;
+        unordered_set<string> fixed_cell_labels;
         unordered_map<string, net*> nets;
         void build_adjacency_matrix();
 
@@ -93,6 +94,7 @@ class circuit {
         double sum_all_connected_weights(cell* c);
         double get_clique_weight(cell* c1, cell* c2);
         adjacency_matrix* get_adjacency_matrix();
+        bool connects_to_fixed_cell(cell* c1);
 };
 void circuit_wait_for_ui();
 void circuit_next_step();

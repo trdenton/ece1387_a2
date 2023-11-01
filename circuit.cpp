@@ -124,6 +124,7 @@ void circuit::add_cell_fixed_coords(vector<string> s) {
     int x = stoi(s[1]);
     int y = stoi(s[2]);
     c->set_coords(x,y,true);
+    fixed_cell_labels.insert(s[0]);
 }
 
 cell* circuit::get_cell(string label) {
@@ -209,6 +210,35 @@ double circuit::get_clique_weight(cell* c1, cell* c2) {
     net* n = get_net(net_label);
     return n->get_weight();
 }
+
+double circuit::sum_all_connected_weights(cell* c) {
+    double result = 0.0;
+    
+    for (auto& s : c->get_net_labels()) {
+        net* n = get_net(s);
+        result += n->get_weight();
+    }
+
+    return result;
+}
+
+circuit::~circuit() {
+    if (Q)
+        delete(Q);
+}
+
+bool circuit::connects_to_fixed_cell(cell* c1) {
+    bool result = false;
+    for(auto& nl : fixed_cell_labels) {
+        cell* other = get_cell(nl);
+        if ( c1->is_connected_to(other) ) {
+            result = true;
+            break;
+        }
+    }
+    return result;
+}
+
 /****
 *
 * cell class functions
@@ -281,21 +311,6 @@ string cell::get_mutual_net_label(cell* other) {
     }
 }
 
-double circuit::sum_all_connected_weights(cell* c) {
-    double result = 0.0;
-    
-    for (auto& s : c->get_net_labels()) {
-        net* n = get_net(s);
-        result += n->get_weight();
-    }
-
-    return result;
-}
-
-circuit::~circuit() {
-    if (Q)
-        delete(Q);
-}
 
 /****
 *
