@@ -62,7 +62,7 @@ class cell {
 };
 
 struct adjacency_matrix {
-    int ncells;
+    int n;
     // the actual adjacency matrix
     vector<int> Ap;
     vector<int> Ai;

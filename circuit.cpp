@@ -152,20 +152,27 @@ void circuit::build_rhs() {
 void circuit::build_adjacency_matrix() {
     int ncells = cells.size();
     Q = new adjacency_matrix();
-    Q->ncells = ncells;
+    Q->n = 0;
 
     // stored in compressed sparse column format
     
-    int ap_idx=0, ai_idx=0, new_column_id=0;
-    bool started_new_column = true; // latches at most once per column
     // cerr << "ncells " << ncells << endl;
     // cerr << "maxn " << 1+(ncells*ncells)/2 << endl;
-    // cerr << "ai_idx\tap_idx"<<endl;
+    int last_pushed_x = -1;
     for(int x = 0; x < ncells; ++x) {
+        cell* xcell = cells[x];
+        if (xcell->is_fixed())
+            continue;
+
+        int movable_y_count = 0;
         for(int y = 0; y < ncells; ++y) {
-            cell* xcell = cells[x];
             cell* ycell = cells[y];
             double val = 0.;
+            
+            if (ycell->is_fixed())
+                continue;
+
+            ++movable_y_count;
 
             if (x==y)
                 val = sum_all_connected_weights(xcell);
@@ -174,40 +181,35 @@ void circuit::build_adjacency_matrix() {
             else
                 continue;
 
+            cerr << "val is " << val << endl;
             // put clique weight in this cell location
-            Q->Ax.push_back(val);
-            Q->Ai.push_back(y);
-            ++ai_idx;
-            if (!started_new_column) {
-                started_new_column = true;
-                new_column_id = ai_idx-1;
+            if (last_pushed_x != Q->n) {
+                last_pushed_x = Q->n;
+                Q->Ap.push_back(Q->Ax.size());
             }
-            //cerr << ai_idx << '\t' << ap_idx << endl;
+            Q->Ax.push_back(val);
+            Q->Ai.push_back(movable_y_count-1);
+
         }
-        if (started_new_column) {
-            Q->Ap.push_back(new_column_id);
-            ++ap_idx;
-            //cerr << ai_idx << '\t' << ap_idx << endl;
-            started_new_column = false;
-        }
+        ++Q->n;
     }
-#if 0 
+#if 1 
     cerr << "checking by inspection...." << endl;
     cerr << "Ap: [ ";
-    for(int i = 0; i < ap_idx; ++i) {
-        cerr << Q->Ap[i] << (i==ap_idx-1? "":", ");
+    for(auto& i : Q->Ap) {
+        cerr << i << ", ";
     }
     cerr << " ]" << endl;
 
     cerr << "Ai: [ ";
-    for(int i = 0; i < ai_idx; ++i) {
-        cerr << Q->Ai[i] << (i==ai_idx-1? "":", ");
+    for(auto& i : Q->Ai) {
+        cerr << i << ", ";
     }
     cerr << " ]" << endl;
 
     cerr << "Ax: [ ";
-    for(int i = 0; i < ai_idx; ++i) {
-        cerr << Q->Ax[i] << (i==ai_idx-1? "":", ");
+    for(auto& i : Q->Ax) {
+        cerr << i << ", ";
     }
     cerr << " ]" << endl;
 #endif
