@@ -45,3 +45,12 @@ TEST(Matrix, cct_mat_test) {
     ASSERT_EQ(Q->Ax[6], 1);
     delete(c);
 }
+
+TEST(Matrix, cct_rhs_test) {
+    circuit* circ = new circuit("../data/cct_inspect_csc");
+    adjacency_matrix* Q = circ->get_adjacency_matrix();
+    double* C = Q->get_C_ss();
+    //ASSERT_EQ(C[0], 0);
+    //ASSERT_EQ(C[1], 0);
+    delete circ;
+}

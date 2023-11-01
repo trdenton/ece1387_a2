@@ -84,6 +84,7 @@ circuit::circuit(string file) {
         spdlog::error("Could not open {}", file);
     }
     build_adjacency_matrix();
+    build_rhs();
 }
 
 net* circuit::get_net(string label) {
@@ -134,6 +135,18 @@ cell* circuit::get_cell(string label) {
         }
     }
     return nullptr;
+}
+
+void circuit::build_rhs() {
+    for(auto& c : cells) {
+        if (connects_to_fixed_cell(c)) {
+            cell* other = get_connected_fixed_cell(c);
+            pair<int,int> coords = other->get_coords();
+            Q->C.push_back(get_clique_weight(c,other)*get<0>(coords));
+        } else {
+            Q->C.push_back(0.);
+        }
+    }
 }
 
 void circuit::build_adjacency_matrix() {
@@ -228,11 +241,15 @@ circuit::~circuit() {
 }
 
 bool circuit::connects_to_fixed_cell(cell* c1) {
-    bool result = false;
+    return (get_connected_fixed_cell(c1) != nullptr);
+}
+
+cell* circuit::get_connected_fixed_cell(cell* c1) {
+    cell* result = nullptr;
     for(auto& nl : fixed_cell_labels) {
         cell* other = get_cell(nl);
         if ( c1->is_connected_to(other) ) {
-            result = true;
+            result = other;
             break;
         }
     }
@@ -359,4 +376,8 @@ int* adjacency_matrix::get_Ai_ss() {
 
 double* adjacency_matrix::get_Ax_ss() {
     return &Ax[0];
+}
+
+double* adjacency_matrix::get_C_ss() {
+    return &C[0];
 }

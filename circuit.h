@@ -63,13 +63,19 @@ class cell {
 
 struct adjacency_matrix {
     int ncells;
+    // the actual adjacency matrix
     vector<int> Ap;
     vector<int> Ai;
     vector<double> Ax;
 
+    // the RHS of the equation
+    vector<double> C;
+
     int* get_Ap_ss();
     int* get_Ai_ss();
     double* get_Ax_ss();
+    double* get_C_ss();
+    
 };
 
 class circuit {
@@ -79,6 +85,7 @@ class circuit {
         unordered_set<string> fixed_cell_labels;
         unordered_map<string, net*> nets;
         void build_adjacency_matrix();
+        void build_rhs();
 
     public:
         circuit(string s);
@@ -95,6 +102,7 @@ class circuit {
         double get_clique_weight(cell* c1, cell* c2);
         adjacency_matrix* get_adjacency_matrix();
         bool connects_to_fixed_cell(cell* c1);
+        cell* get_connected_fixed_cell(cell* c1);
 };
 void circuit_wait_for_ui();
 void circuit_next_step();
