@@ -85,7 +85,7 @@ class circuit {
         unordered_set<string> fixed_cell_labels;
         unordered_map<string, net*> nets;
         void build_solver_matrix();
-        void build_rhs();
+        void build_solver_rhs();
 
     public:
         circuit(string s);

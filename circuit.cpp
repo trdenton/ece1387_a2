@@ -88,7 +88,7 @@ circuit::circuit(string file) {
         spdlog::error("Could not open {}", file);
     }
     build_solver_matrix();
-    build_rhs();
+    build_solver_rhs();
 }
 
 net* circuit::get_net(string label) {
@@ -141,7 +141,7 @@ cell* circuit::get_cell(string label) {
     return nullptr;
 }
 
-void circuit::build_rhs() {
+void circuit::build_solver_rhs() {
     for(auto& c : cells) {
         if (c->is_fixed())
             continue;
