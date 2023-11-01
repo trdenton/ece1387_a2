@@ -138,6 +138,7 @@ cell* circuit::get_cell(string label) {
 void circuit::build_adjacency_matrix() {
     int ncells = cells.size();
     Q = new adjacency_matrix();
+    Q->ncells = ncells;
 
     // stored in compressed sparse column format
     

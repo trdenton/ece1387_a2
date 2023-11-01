@@ -62,6 +62,7 @@ class cell {
 };
 
 struct adjacency_matrix {
+    int ncells;
     vector<int> Ap;
     vector<int> Ai;
     vector<double> Ax;
