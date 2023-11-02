@@ -11,9 +11,9 @@ TEST(FileRead, cct1_cells_coords) {
     ASSERT_EQ(c->get_n_cells(),26);
 
     cell* b = c->get_cell("24");
-    std::pair<int,int> coords = b->get_coords();
-    ASSERT_EQ(std::get<0>(coords), 25);
-    ASSERT_EQ(std::get<1>(coords), 22);
+    std::pair<double,double> coords = b->get_coords();
+    ASSERT_EQ(std::get<0>(coords), 25.);
+    ASSERT_EQ(std::get<1>(coords), 22.);
 
     delete c;
 }

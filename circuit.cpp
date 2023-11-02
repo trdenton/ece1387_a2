@@ -148,7 +148,7 @@ void circuit::build_solver_rhs() {
         double xval=0., yval=0.;
         if (connects_to_fixed_cell(c)) {
             cell* other = get_connected_fixed_cell(c);
-            pair<int,int> coords = other->get_coords();
+            pair<double,double> coords = other->get_coords();
             xval = get_clique_weight(c,other)*get<0>(coords);
             yval = get_clique_weight(c,other)*get<1>(coords);
         } 
@@ -258,12 +258,20 @@ void circuit::umfpack(enum axis ax, double* res) {
 void circuit::iter() {
     double* x = new double[Q->n];
     double* y = new double[Q->n];
-    int i ;
+    int i=0;
     
     umfpack(X, x);
     umfpack(Y, y);
 
-    for (i = 0 ; i < Q->n ; i++) printf ("x,y [%d] = %g,%g\n", i, x[i], y[i]) ;
+    for (auto& cell : cells) { 
+        if (!cell->is_fixed()) {
+            cell->set_coords(x[i],y[i]);
+            ++i;
+        }
+    }
+
+    assert(i == Q->n);
+
     delete[] x;
     delete[] y;
 }
@@ -307,6 +315,20 @@ cell* circuit::get_connected_fixed_cell(cell* c1) {
     return result;
 }
 
+void circuit::foreach_cell(void (*fn)(cell* c)) {
+    for(auto* c : cells) {
+        fn(c);
+    }
+}
+
+void circuit::foreach_net(void (*fn)(net* c)) {
+    /*
+    for(auto* c : nets) {
+        fn(c.second);
+    }
+    */
+}
+
 /****
 *
 * cell class functions
@@ -325,7 +347,7 @@ cell::cell(vector<string> s) {
     //nets = std::vector<string>(s.begin()+1,s.end()-1);
 }
 
-void cell::set_coords(int _x, int _y, bool _fixed) {
+void cell::set_coords(double _x, double _y, bool _fixed) {
     x = _x;
     y = _y;
     fixed = _fixed;
@@ -335,8 +357,8 @@ unordered_set<string> cell::get_net_labels() {
     return net_labels;
 }
 
-pair<int,int> cell::get_coords() {
-    return pair<int,int>(x,y);
+pair<double,double> cell::get_coords() {
+    return pair<double,double>(x,y);
 }
 
 void cell::add_net(string s) {

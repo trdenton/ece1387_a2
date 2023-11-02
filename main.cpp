@@ -111,17 +111,17 @@ int main(int n, char** args) {
 
     circuit* circ = new circuit(file);
     circ->iter();
-    #if 0
-    thread t1(route_thread, circ, step);
+    #if 1
+    //thread t1(route_thread, circ, step);
 
-    if (!interactive)
-        t1.join();
+    //if (!interactive)
+    //    t1.join();
 
     if (interactive) {
         spdlog::info("Entering interactive mode");
         ui_init(circ);
         ui_teardown();
-        t1.join();
+     //   t1.join();
     }
     #endif
 

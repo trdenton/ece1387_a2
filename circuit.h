@@ -39,8 +39,8 @@ class net {
 
 class cell {
     private:
-        int x;
-        int y;
+        double x;
+        double y;
         bool fixed;
         unordered_set<string> net_labels;
 
@@ -48,8 +48,8 @@ class cell {
         string label;
         cell(vector<string> s);
         void connect(cell* other);
-        void set_coords(int _x, int _y, bool _fixed=false);
-        pair<int,int> get_coords();
+        void set_coords(double _x, double _y, bool _fixed=false);
+        pair<double,double> get_coords();
         unordered_set<string> get_net_labels();
         void add_net(net& n);
         void add_net(string s);
@@ -103,6 +103,8 @@ class circuit {
         bool connects_to_fixed_cell(cell* c1);
         cell* get_connected_fixed_cell(cell* c1);
         void iter();
+        void foreach_cell(void (*fn)(cell* c));
+        void foreach_net(void (*fn)(net* n));
 };
 void circuit_wait_for_ui();
 void circuit_next_step();

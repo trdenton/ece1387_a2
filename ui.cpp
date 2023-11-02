@@ -57,6 +57,22 @@ void ui_key_handler(char c) {
 	spdlog::debug("keypress {}",c);
 }
 
+void ui_draw_cell_fn(cell* c) {
+    spdlog::debug("HI c {}, {}", get<0>(c->get_coords()), get<1>(c->get_coords()));
+}
+
+void ui_draw_net_fn(net* n) {
+}
+
+void ui_draw_cells(circuit* circ){
+    circ->foreach_cell( ui_draw_cell_fn );
+}
+
+void ui_draw_rats_nest(circuit* circ){
+    circ->foreach_net( ui_draw_net_fn );
+}
 
 void ui_draw(circuit* circ) {
+    ui_draw_cells(circ);
+    ui_draw_rats_nest(circ);
 }
