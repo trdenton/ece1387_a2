@@ -103,8 +103,8 @@ class circuit {
         bool connects_to_fixed_cell(cell* c1);
         cell* get_connected_fixed_cell(cell* c1);
         void iter();
-        void foreach_cell(void (*fn)(cell* c));
-        void foreach_net(void (*fn)(net* n));
+        void foreach_cell(void (*fn)(circuit* circ, cell* c));
+        void foreach_net(void (*fn)(circuit* circ, net* n));
 };
 void circuit_wait_for_ui();
 void circuit_next_step();

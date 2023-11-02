@@ -315,18 +315,16 @@ cell* circuit::get_connected_fixed_cell(cell* c1) {
     return result;
 }
 
-void circuit::foreach_cell(void (*fn)(cell* c)) {
+void circuit::foreach_cell(void (*fn)(circuit* circ, cell* c)) {
     for(auto* c : cells) {
-        fn(c);
+        fn(this,c);
     }
 }
 
-void circuit::foreach_net(void (*fn)(net* c)) {
-    /*
-    for(auto* c : nets) {
-        fn(c.second);
+void circuit::foreach_net(void (*fn)(circuit* circ, net* c)) {
+    for(auto& c : nets) {
+        fn(this, c.second);
     }
-    */
 }
 
 /****
