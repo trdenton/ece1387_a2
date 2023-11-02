@@ -58,13 +58,24 @@ void ui_key_handler(char c) {
 }
 
 void ui_draw_cell_fn(cell* c) {
-    spdlog::debug("HI c {}, {}", get<0>(c->get_coords()), get<1>(c->get_coords()));
+    double width = 1.;
+    double height = width;
+    // center at the cells coords
+    pair<double,double> p = c->get_coords();
+    double x = get<0>(p);
+    double y = get<1>(p);
+
+    drawrect(x - width/2, y - height/2, x + width/2, y + width/2);
 }
 
 void ui_draw_net_fn(net* n) {
 }
 
 void ui_draw_cells(circuit* circ){
+    setcolor(GREEN);
+    setlinestyle(SOLID);
+    setlinewidth(1);
+
     circ->foreach_cell( ui_draw_cell_fn );
 }
 
