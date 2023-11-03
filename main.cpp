@@ -39,7 +39,7 @@ void print_usage() {
     cout << "\t-d: turn on debug log level" <<endl;
     cout << "\t-i: enable interactive (gui) mode" <<endl;
     cout << "\t-s: step through algorithm" <<endl;
-    cout << "\t-w b: use fixed cell weight bias b (higher = heavier, integer)" <<endl;
+    cout << "\t-w b: incraese fixed cell weight bias by b% (higher = heavier, integer)" <<endl;
 }
 
 void print_version() {

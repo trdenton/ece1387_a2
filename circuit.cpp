@@ -156,8 +156,8 @@ void circuit::build_solver_rhs() {
         } 
 
         if (fixed_weight_bias != 0) {
-            xval *= (double)fixed_weight_bias;
-            yval *= (double)fixed_weight_bias;
+            xval *= (double)(100. + fixed_weight_bias)/100.;
+            yval *= (double)(100. + fixed_weight_bias)/100.;
         }
         Q->Cx.push_back(xval);
         Q->Cy.push_back(yval);
