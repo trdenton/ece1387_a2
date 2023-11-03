@@ -273,6 +273,7 @@ void circuit::iter() {
     }
 
     assert(i == Q->n);
+    spdlog::info("HPWL: {}", hpwl());
 
     delete[] x;
     delete[] y;
@@ -340,6 +341,41 @@ void circuit::foreach_net(void (*fn)(circuit* circ, net* c)) {
     for(auto& c : nets) {
         fn(this, c.second);
     }
+}
+
+double circuit::hpwl() {
+    double min_x=0.;
+    double max_x=0.;
+    double min_y=0.;
+    double max_y=0.;
+    
+    bool first = true;
+
+    for(auto* c: cells) {
+        if (!c->is_fixed()) {
+            pair<double,double> coords = c->get_coords();
+            double x = get<0>(coords);
+            double y = get<1>(coords);
+            if (first) {
+                min_y = y;
+                min_x = x;
+                max_y = y;
+                max_x = x;
+                first = false;
+            }
+
+            if (y < min_y)
+                min_y = y; 
+            if (y > max_y)
+                max_y = y;
+
+            if (x > max_x)
+                max_x = x;
+            if (x < min_x)
+                min_x = x; 
+        }
+    }
+    return (max_x - min_x) + (max_y - min_y);
 }
 
 /****

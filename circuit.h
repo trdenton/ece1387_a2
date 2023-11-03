@@ -105,6 +105,7 @@ class circuit {
         void iter();
         void foreach_cell(void (*fn)(circuit* circ, cell* c));
         void foreach_net(void (*fn)(circuit* circ, net* n));
+        double hpwl();
 };
 void circuit_wait_for_ui();
 void circuit_next_step();
