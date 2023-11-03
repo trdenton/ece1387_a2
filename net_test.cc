@@ -42,8 +42,8 @@ TEST(Net, cct1_check_net_weights) {
     net* n3 = c->get_net("3"); // should have 4 pins
     net* n4 = c->get_net("4"); // should have 4 pins
 
-    // initially its the clique weight, p-1
-    ASSERT_EQ(n3->get_weight(), 3.);
-    ASSERT_EQ(n4->get_weight(), 1.);
+    // initially its the clique weight, 2/p
+    ASSERT_EQ(n3->get_weight(), 2./4.);
+    ASSERT_EQ(n4->get_weight(), 2./2.);
     delete(c);
 }

@@ -428,7 +428,7 @@ int net::num_pins() {
 }
 
 double net::get_weight() {
-    return (double)(num_pins()-1);
+    return (double)(2./num_pins());
 }
 
 /****

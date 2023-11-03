@@ -10,10 +10,10 @@ TEST(Matrix, cct1_sum_all_weights) {
 
     // 26 4 23 -1
     // net 4 and net 23
-    // net 4 only connects 2 cells
+    // net 4 only connects 2 cells - 2/p = 1
     // so hte weight should be 1.0
 
-    // net 23 also has 2 pins, also 1.0
+    // net 23 also has 2 pins, also 1.0 by the same logic
     // the total weight should be 2.0
     double weight = c->sum_all_connected_weights(c26);
     ASSERT_EQ( weight, 2. );
