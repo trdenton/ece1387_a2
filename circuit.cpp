@@ -149,8 +149,9 @@ void circuit::build_solver_rhs() {
         if (connects_to_fixed_cell(c)) {
             cell* other = get_connected_fixed_cell(c);
             pair<double,double> coords = other->get_coords();
-            xval = get_clique_weight(c,other)*get<0>(coords);
-            yval = get_clique_weight(c,other)*get<1>(coords);
+            xval = get_clique_weight(c,other)*get<0>(coords);   // w_i,z * x_z
+            yval = get_clique_weight(c,other)*get<1>(coords);   // w_i,z * y_z
+            spdlog::debug("cell {} wiz {} xz {} yz {} ", c->label, get_clique_weight(c,other), get<0>(coords), get<1>(coords));
         } 
         Q->Cx.push_back(xval);
         Q->Cy.push_back(yval);
@@ -185,9 +186,9 @@ void circuit::build_solver_matrix() {
             if (x==y)
                 val = sum_all_connected_weights(xcell);
             else if (xcell->is_connected_to(ycell))
-                val = -get_clique_weight(xcell,ycell);
+                val = -1*get_clique_weight(xcell,ycell);
             else
-                continue;
+                continue;   //no connection, this becomes a zero
 
             // put clique weight in this cell location
             if (last_pushed_x != Q->n) {
@@ -265,6 +266,7 @@ void circuit::iter() {
 
     for (auto& cell : cells) { 
         if (!cell->is_fixed()) {
+            spdlog::debug("cell {} x {} y {}", cell->label, x[i], y[i]);
             cell->set_coords(x[i],y[i]);
             ++i;
         }
@@ -278,18 +280,31 @@ void circuit::iter() {
 
 double circuit::get_clique_weight(cell* c1, cell* c2) {
     // need to get the common net
-    string net_label = c1->get_mutual_net_label(c2);
-    net* n = get_net(net_label);
-    return n->get_weight();
+    vector<string> net_labels = c1->get_mutual_net_labels(c2);
+    double result = 0.;
+    for (auto& s : net_labels) {
+        net* n = get_net(s);
+        result += n->get_weight();
+    }
+    return result;
 }
 
 double circuit::sum_all_connected_weights(cell* c) {
     double result = 0.0;
     
+    spdlog::debug("cell {}:", c->label);
     for (auto& s : c->get_net_labels()) {
         net* n = get_net(s);
-        result += n->get_weight();
+
+        for (auto& cell_label : n->get_cell_labels()) {
+            cell* other = get_cell(cell_label);
+            if (other != c) {
+                spdlog::debug("\tadding net {}, weight {} (from cell {})", n->label, n->get_weight(), other->label);
+                result += n->get_weight();
+            }
+        }
     }
+    spdlog::debug("\ttotal: {}", result);
 
     return result;
 }
@@ -369,12 +384,13 @@ void cell::add_net(net& n) {
 }
 
 bool cell::is_connected_to(cell* other) {
-    return (get_mutual_net_label(other) != NO_MUTUAL_LABEL);
+    return (get_mutual_net_labels(other).size() > 0);
 }
 
-string cell::get_mutual_net_label(cell* other) {
+vector<string> cell::get_mutual_net_labels(cell* other) {
     vector<string> my_net_labels_ordered;
     vector<string> other_net_labels_ordered;
+    
     
     for (auto n : net_labels) {
         my_net_labels_ordered.push_back(n);
@@ -392,11 +408,7 @@ string cell::get_mutual_net_label(cell* other) {
     set_intersection(my_net_labels_ordered.begin(), my_net_labels_ordered.end(),
                      other_net_labels_ordered.begin(), other_net_labels_ordered.end(),
                      back_inserter(intersection));
-    if (intersection.empty()) {
-        return NO_MUTUAL_LABEL;
-    } else {
-        return intersection[0];
-    }
+    return intersection;
 }
 
 
@@ -428,7 +440,7 @@ int net::num_pins() {
 }
 
 double net::get_weight() {
-    return (double)(2./num_pins());
+    return (double)(2./(double)(num_pins()));
 }
 
 /****

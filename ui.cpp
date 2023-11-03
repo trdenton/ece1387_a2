@@ -84,6 +84,10 @@ void ui_draw_net_fn(circuit* circ, net* n) {
             double x1 = get<0>(c2->get_coords());
             double y1 = get<1>(c2->get_coords());
             drawline(x0, y0, x1, y1);
+            char buff[32] = {'\0'};
+            snprintf(buff,32,"%s: %f",n->label.c_str(), n->get_weight());
+            spdlog::debug("weight is {}", n->get_weight());
+            drawtext((x0+x1)/2., (y0+y1)/2., buff, 10.0);
         }
         sp = s;
     }

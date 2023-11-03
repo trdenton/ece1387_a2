@@ -54,7 +54,7 @@ class cell {
         void add_net(net& n);
         void add_net(string s);
         bool is_connected_to(cell* other);
-        string get_mutual_net_label(cell* other);
+        vector<string> get_mutual_net_labels(cell* other);
         bool is_fixed();
 };
 
