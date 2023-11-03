@@ -146,16 +146,19 @@ void circuit::build_solver_rhs() {
             continue;
         double xval=0., yval=0.;
         if (connects_to_fixed_cell(c)) {
-            cell* other = get_connected_fixed_cell(c);
-            pair<double,double> coords = other->get_coords();
-            xval = get_clique_weight(c,other)*get<0>(coords);   // w_i,z * x_z
-            yval = get_clique_weight(c,other)*get<1>(coords);   // w_i,z * y_z
-            if (fixed_weight_bias != 0) {
-                xval *= (double)fixed_weight_bias;
-                yval *= (double)fixed_weight_bias;
+            vector<cell*> others = get_connected_fixed_cells(c);
+            for (auto& other : others) {
+                pair<double,double> coords = other->get_coords();
+                xval += get_clique_weight(c,other)*get<0>(coords);   // w_i,z * x_z
+                yval += get_clique_weight(c,other)*get<1>(coords);   // w_i,z * y_z
+                spdlog::debug("cell {} wiz {} xz {} yz {} ", c->label, get_clique_weight(c,other), get<0>(coords), get<1>(coords));
             }
-            spdlog::debug("cell {} wiz {} xz {} yz {} ", c->label, get_clique_weight(c,other), get<0>(coords), get<1>(coords));
         } 
+
+        if (fixed_weight_bias != 0) {
+            xval *= (double)fixed_weight_bias;
+            yval *= (double)fixed_weight_bias;
+        }
         Q->Cx.push_back(xval);
         Q->Cy.push_back(yval);
     }
@@ -322,16 +325,15 @@ circuit::~circuit() {
 }
 
 bool circuit::connects_to_fixed_cell(cell* c1) {
-    return (get_connected_fixed_cell(c1) != nullptr);
+    return (!get_connected_fixed_cells(c1).empty());
 }
 
-cell* circuit::get_connected_fixed_cell(cell* c1) {
-    cell* result = nullptr;
+vector<cell*> circuit::get_connected_fixed_cells(cell* c1) {
+    vector<cell*> result;
     for(auto& nl : fixed_cell_labels) {
         cell* other = get_cell(nl);
         if ( c1->is_connected_to(other) ) {
-            result = other;
-            break;
+            result.push_back(other);
         }
     }
     return result;
