@@ -53,6 +53,7 @@ circuit::circuit(string file) {
     string line;
     ifstream infile (file);
     spdlog::debug("Reading input file {}", file);
+    fixed_weight_bias = 0;
 
     if (infile.is_open()) {
 
@@ -87,8 +88,6 @@ circuit::circuit(string file) {
     } else {
         spdlog::error("Could not open {}", file);
     }
-    build_solver_matrix();
-    build_solver_rhs();
 }
 
 net* circuit::get_net(string label) {
@@ -151,6 +150,10 @@ void circuit::build_solver_rhs() {
             pair<double,double> coords = other->get_coords();
             xval = get_clique_weight(c,other)*get<0>(coords);   // w_i,z * x_z
             yval = get_clique_weight(c,other)*get<1>(coords);   // w_i,z * y_z
+            if (fixed_weight_bias != 0) {
+                xval *= (double)fixed_weight_bias;
+                yval *= (double)fixed_weight_bias;
+            }
             spdlog::debug("cell {} wiz {} xz {} yz {} ", c->label, get_clique_weight(c,other), get<0>(coords), get<1>(coords));
         } 
         Q->Cx.push_back(xval);
@@ -257,10 +260,13 @@ void circuit::umfpack(enum axis ax, double* res) {
 }
 
 void circuit::iter() {
+    build_solver_matrix();
+    build_solver_rhs();
+
     double* x = new double[Q->n];
     double* y = new double[Q->n];
     int i=0;
-    
+
     umfpack(X, x);
     umfpack(Y, y);
 
@@ -376,6 +382,11 @@ double circuit::hpwl() {
         }
     }
     return (max_x - min_x) + (max_y - min_y);
+}
+
+void circuit::set_fixed_weight_bias(int n) {
+    spdlog::debug("WE CHANGE TO {}", n);
+    fixed_weight_bias = n;
 }
 
 /****

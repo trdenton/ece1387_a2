@@ -6,6 +6,7 @@
 
 TEST(Net, cct1_check_nets_in_common) {
     circuit* c = new circuit("../data/cct1");
+    c->iter();
     cell* c1 = c->get_cell("1");
     cell* c12 = c->get_cell("12");
 
@@ -16,6 +17,7 @@ TEST(Net, cct1_check_nets_in_common) {
 
 TEST(Net, cct1_check_nets_not_in_common) {
     circuit* c = new circuit("../data/cct1");
+    c->iter();
     cell* c1 = c->get_cell("1");
     cell* c12 = c->get_cell("12");
     cell* c26 = c->get_cell("26");
@@ -29,6 +31,7 @@ TEST(Net, cct1_check_nets_not_in_common) {
 
 TEST(Net, cct1_check_net_n_pins) {
     circuit* c = new circuit("../data/cct1");
+    c->iter();
     net* n3 = c->get_net("3"); // should have 4 pins
     net* n4 = c->get_net("4"); // should have 4 pins
 
@@ -39,6 +42,7 @@ TEST(Net, cct1_check_net_n_pins) {
 
 TEST(Net, cct1_check_net_weights) {
     circuit* c = new circuit("../data/cct1");
+    c->iter();
     net* n3 = c->get_net("3"); // should have 4 pins
     net* n4 = c->get_net("4"); // should have 4 pins
 

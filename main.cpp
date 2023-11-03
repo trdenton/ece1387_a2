@@ -39,6 +39,7 @@ void print_usage() {
     cout << "\t-d: turn on debug log level" <<endl;
     cout << "\t-i: enable interactive (gui) mode" <<endl;
     cout << "\t-s: step through algorithm" <<endl;
+    cout << "\t-w b: use fixed cell weight bias b (higher = heavier, integer)" <<endl;
 }
 
 void print_version() {
@@ -62,14 +63,18 @@ int main(int n, char** args) {
 
     bool interactive = false;
     bool step = false;
-    int force_w = 0;
+    int fixed_weight = 0;
 
     for(;;)
     {
-        switch(getopt(n, args, "vhf:dis"))
+        switch(getopt(n, args, "vhf:disw:"))
         {
             case 'f':
                 file = optarg;
+                continue;
+
+            case 'w':
+                fixed_weight = stoi(optarg);
                 continue;
 
             case 'd':
@@ -99,17 +104,25 @@ int main(int n, char** args) {
         break;
     }
 
+    print_version();
+
     if (file == "") {
         spdlog::error("Error: must provide input file");
         print_usage();
         return 1;
     }
 
-    print_version();
+    if (fixed_weight != 0) {
+        spdlog::info("using fixed weight bias {}", fixed_weight);
+    }
+
 
     //test_suitesparse();
 
     circuit* circ = new circuit(file);
+    if (fixed_weight != 0) {
+        circ->set_fixed_weight_bias(fixed_weight);
+    }
     circ->iter();
     #if 1
     //thread t1(route_thread, circ, step);

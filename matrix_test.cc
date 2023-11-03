@@ -6,6 +6,7 @@
 
 TEST(Matrix, cct1_sum_all_weights) {
     circuit* c = new circuit("../data/cct1");
+    c->iter();
     cell* c26 = c->get_cell("26");
 
     // 26 4 23 -1
@@ -23,6 +24,7 @@ TEST(Matrix, cct1_sum_all_weights) {
 
 TEST(Matrix, cct_mat_test) {
     circuit* c = new circuit("../data/cct_inspect_csc");
+    c->iter();
     solver_matrix* Q = c->get_solver_matrix();
     ASSERT_EQ(Q->Ap[0], 0);
     ASSERT_EQ(Q->Ap[1], 2);
@@ -49,6 +51,7 @@ TEST(Matrix, cct_mat_test) {
 
 TEST(Matrix, cct_rhs_test) {
     circuit* circ = new circuit("../data/cct_inspect_csc");
+    circ->iter();
     solver_matrix* Q = circ->get_solver_matrix();
     double* C = Q->get_C_ss(X);
     ASSERT_EQ(Q->Cx.size(),3);
@@ -61,6 +64,7 @@ TEST(Matrix, cct_rhs_test) {
 
 TEST(Matrix, cct_num_movable_elems) {
     circuit* circ = new circuit("../data/cct_inspect_csc");
+    circ->iter();
     solver_matrix* Q = circ->get_solver_matrix();
     ASSERT_EQ(Q->n, 3);
     delete circ;
