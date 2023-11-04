@@ -23,7 +23,7 @@ class fabric {
     public:
         fabric(int x, int y);
         ~fabric();
-        void add_obstruction(int x0, int y0, int x1, int y1);
+        void mark_obstruction(int x0, int y0, int x1, int y1);
         bin* get_bin(int x, int y);
         void map_cells(vector<cell*> cells);
         void run_flow();
