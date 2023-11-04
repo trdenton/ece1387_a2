@@ -72,3 +72,10 @@ void fabric::map_cells(vector<cell*> cells) {
         bins[x][y]->cells.push_back(c);
     }
 }
+
+void fabric::run_flow_iter(double (*psi)(int, psi_params*)) {
+    if (psi == nullptr) {
+        spdlog::error("psi doesnt look like a function, I'm giving up");
+        return;
+    }
+}
