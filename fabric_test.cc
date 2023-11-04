@@ -65,8 +65,8 @@ TEST(Fabric, map_cells) {
 
     c1.set_coords(1.1,1.1);
     c2.set_coords(0.0,1.0);
-    c3.set_coords(5.1,5.5);
-    c4.set_coords(5.1,5.9);
+    c3.set_coords(5.1,5.4);
+    c4.set_coords(5.1,5.4);
     vector<cell*> cells = {&c1,&c2,&c3,&c4};
 
     fab->map_cells(cells);
@@ -99,10 +99,10 @@ TEST(FABRIC, supply_calc) {
 
     c1.set_coords(1.1,1.1);
     c2.set_coords(0.0,1.0);
-    c3.set_coords(5.1,5.5);
-    c4.set_coords(5.1,5.9);
-    c5.set_coords(0.5,1.5);
-    c6.set_coords(0.4,1.5);
+    c3.set_coords(5.1,5.4);
+    c4.set_coords(5.1,5.4);
+    c5.set_coords(0.4,1.4);
+    c6.set_coords(0.4,1.4);
 
     fab->map_cells(cells);
     

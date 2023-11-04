@@ -29,7 +29,8 @@ class fabric {
         void mark_obstruction(int x0, int y0, int x1, int y1);
         bin* get_bin(int x, int y);
         void map_cells(vector<cell*> cells);
-        void run_flow();
+        void run_flow(double (*psi)(int iter));
+        void foreach_bin(void (*fn)(bin* b));
 };
 
 #endif

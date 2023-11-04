@@ -108,6 +108,7 @@ class circuit {
         void foreach_net(void (*fn)(circuit* circ, net* n));
         double hpwl();
         void set_fixed_weight_bias(int n);
+        vector<cell*> get_cells() {return cells;};
 };
 void circuit_wait_for_ui();
 void circuit_next_step();

@@ -7,6 +7,7 @@
 #include "version.h"
 #include "easygl/graphics.h"
 #include "ui.h"
+#include "fabric.h"
 #include "umfpack.h"
 #include <thread>
 
@@ -124,21 +125,19 @@ int main(int n, char** args) {
         circ->set_fixed_weight_bias(fixed_weight);
     }
     circ->iter();
-    #if 1
-    //thread t1(route_thread, circ, step);
 
-    //if (!interactive)
-    //    t1.join();
+    fabric* fab = new fabric(25,25);
+    fab->mark_obstruction(2,2,9,9);
+    fab->map_cells(circ->get_cells());
 
     if (interactive) {
         spdlog::info("Entering interactive mode");
-        ui_init(circ);
+        ui_init(circ,fab);
         ui_teardown();
-     //   t1.join();
     }
-    #endif
 
     spdlog::info("Exiting");
     delete(circ);
+    delete(fab);
     return 0;
 }

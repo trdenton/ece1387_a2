@@ -4,6 +4,7 @@
 #include "spdlog/spdlog.h"
 #include "circuit.h"
 #include "ui.h"
+#include "fabric.h"
 #include <condition_variable>
 using namespace std;
 
@@ -16,6 +17,7 @@ void ui_key_handler(char c);
 float logic_cell_width = 10.0;
 
 circuit* circ;
+fabric* fab;
 
 
 void ui_pump(void (*draw)()) {
@@ -23,8 +25,9 @@ void ui_pump(void (*draw)()) {
     draw();
 }
 
-void ui_init(circuit* circuit) {
+void ui_init(circuit* circuit, fabric* fabric) {
     circ = circuit;
+    fab = fabric;
     spdlog::info("Init UI");
     init_graphics("A1", BLACK);
     create_button("Proceed","PUMP", ui_pump);
@@ -65,8 +68,10 @@ void ui_draw_cell_fn(circuit* circ, cell* c) {
     double x = get<0>(p);
     double y = get<1>(p);
 
-    setcolor(c->is_fixed() ? YELLOW : GREEN);
+    setcolor(c->is_fixed() ? MAGENTA : GREEN);
+    setlinewidth(2);
     drawrect(x - width/2, y - height/2, x + width/2, y + width/2);
+    setlinewidth(1);
 }
 
 void ui_draw_net_fn(circuit* circ, net* n) {
@@ -93,12 +98,30 @@ void ui_draw_net_fn(circuit* circ, net* n) {
     }
 }
 
+void ui_draw_bin_fn(bin* b) {
+    double width = 1.;
+    double height = width;
+    // center at the cells coords
+    double x = b->x;
+    double y = b->y;
+
+    setcolor(!(b->usable) ? DARKGREY : 
+            b->supply() > 0 ? YELLOW : 
+            LIGHTGREY);
+
+    ( b->usable && b->usage() == 0 ? drawrect : fillrect)(x - width/2, y - height/2, x + width/2, y + width/2);
+}
+
 void ui_draw_cells(circuit* circ){
     setcolor(GREEN);
     setlinestyle(SOLID);
     setlinewidth(1);
 
     circ->foreach_cell( ui_draw_cell_fn );
+}
+
+void ui_draw_bins(fabric* fab) {
+    fab->foreach_bin( ui_draw_bin_fn );
 }
 
 void ui_draw_rats_nest(circuit* circ){
@@ -109,6 +132,7 @@ void ui_draw_rats_nest(circuit* circ){
 }
 
 void ui_draw(circuit* circ) {
+    ui_draw_bins(fab);
     ui_draw_rats_nest(circ);
     ui_draw_cells(circ);
 }

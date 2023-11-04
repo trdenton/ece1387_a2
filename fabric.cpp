@@ -6,12 +6,12 @@
 using namespace std;
 
 fabric::fabric(int x, int y) {
-    bins = new bin**[x];
+    bins = new bin**[x+1];
     width=x;
     height=y;
-    for(int i = 0; i < x; i ++) {
-        bins[i] = new bin*[y];
-        for(int j = 0; j < y; j++) {
+    for(int i = 0; i <= x; i ++) {
+        bins[i] = new bin*[y+1];
+        for(int j = 0; j <= y; j++) {
             bins[i][j] = new bin;
             bins[i][j]->x = (double)i;
             bins[i][j]->y = (double)j;
@@ -22,8 +22,8 @@ fabric::fabric(int x, int y) {
 }
 
 fabric::~fabric() {
-    for(int i = 0; i < width; i++) {
-        for(int j = 0; j < height; j++) {
+    for(int i = 0; i <= width; i++) {
+        for(int j = 0; j <= height; j++) {
             delete bins[i][j];
         }
         delete bins[i];
@@ -32,6 +32,14 @@ fabric::~fabric() {
 
 bin* fabric::get_bin(int x, int y) {
     return bins[x][y]; 
+}
+
+void fabric::foreach_bin(void (*fn)(bin* b)) {
+    for(int i = 0; i < width; i++) {
+        for(int j = 0; j < height; j++) {
+            fn(get_bin(i,j));
+        }
+    } 
 }
 
 void fabric::mark_obstruction(int x0, int y0, int x1, int y1) {
@@ -59,8 +67,8 @@ void fabric::mark_obstruction(int x0, int y0, int x1, int y1) {
 void fabric::map_cells(vector<cell*> cells) {
     for(auto& c: cells) {
         pair<double,double> coords = c->get_coords();
-        int x = get<0>(coords);
-        int y = get<1>(coords);
+        int x = round(get<0>(coords));
+        int y = round(get<1>(coords));
         bins[x][y]->cells.push_back(c);
     }
 }
