@@ -79,6 +79,7 @@ add_executable(
   net_test.cc
   fabric_test.cc
   circuit.cpp
+  psis.cpp
   fabric.cpp
 )
 
@@ -91,6 +92,7 @@ add_executable(
   ui.cpp
   circuit.cpp
   fabric.cpp
+  psis.cpp
   easygl/graphics.cpp
 )
 

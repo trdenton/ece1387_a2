@@ -9,6 +9,7 @@
 #include "ui.h"
 #include "fabric.h"
 #include "umfpack.h"
+#include "psis.h"
 #include <thread>
 
 using namespace std;
