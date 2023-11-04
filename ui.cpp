@@ -31,8 +31,7 @@ void ui_init(circuit* circuit, fabric* fabric) {
     spdlog::info("Init UI");
     init_graphics("A1", BLACK);
     create_button("Proceed","PUMP", ui_pump);
-    //init_world(-50.,-50.,150.,150.);
-    init_world(-50.,150.,150.,-50.);
+    init_world(3.,22.,22.,3.);
     //set_keypress_input(true);
     //set_mouse_move_input(true);
     event_loop(ui_click_handler, ui_mouse_handler, ui_key_handler, ui_drawscreen);   
