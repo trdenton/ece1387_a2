@@ -44,6 +44,7 @@ FetchContent_MakeAvailable(googletest)
 
 #needed for easygl
 add_compile_definitions(PLATFORM=X11)
+add_compile_options(-Wno-deprecated-declarations)
 
 FetchContent_GetProperties(spdlog)
 if (NOT spdlog_POPULATED)
@@ -77,6 +78,7 @@ add_executable(
   cell_test.cc
   net_test.cc
   circuit.cpp
+  fabric.cpp
 )
 
 #
@@ -87,6 +89,7 @@ add_executable(
   main.cpp
   ui.cpp
   circuit.cpp
+  fabric.cpp
   easygl/graphics.cpp
 )
 

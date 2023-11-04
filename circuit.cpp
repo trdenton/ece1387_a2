@@ -516,4 +516,5 @@ double* solver_matrix::get_C_ss(enum axis ax) {
     if (ax == Y)
         return &Cy[0];
     spdlog::error("Received invalid axis {}", ax);
+    return nullptr;
 }
