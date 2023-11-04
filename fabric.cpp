@@ -27,3 +27,7 @@ fabric::~fabric() {
         delete bins[i];
     } 
 }
+
+bin* fabric::get_bin(int x, int y) {
+    return bins[x][y]; 
+}
