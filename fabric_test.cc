@@ -54,3 +54,34 @@ TEST(Fabric, obstruction) {
 
     delete fab;
 }
+
+TEST(Fabric, map_cells) {
+    fabric* fab = new fabric(10,10);
+    vector<string> nets = {"a","b"}; // irrelevant
+    cell c1(nets);
+    cell c2(nets);
+    cell c3(nets);
+    cell c4(nets);
+
+    c1.set_coords(1.1,1.1);
+    c2.set_coords(0.0,1.0);
+    c3.set_coords(5.1,5.5);
+    c4.set_coords(5.1,5.9);
+    vector<cell*> cells = {&c1,&c2,&c3,&c4};
+
+    fab->map_cells(cells);
+    // should map to floor,floor
+
+    ASSERT_TRUE(fab->get_bin(0,0)->cells.empty());
+
+    ASSERT_FALSE( fab->get_bin(1,1)->cells.empty());
+    ASSERT_FALSE( fab->get_bin(0,1)->cells.empty());
+    ASSERT_FALSE( fab->get_bin(5,5)->cells.empty());
+
+    ASSERT_EQ( fab->get_bin(1,1)->cells[0], &c1 );
+    ASSERT_EQ( fab->get_bin(0,1)->cells[0], &c2 );
+    ASSERT_EQ( fab->get_bin(5,5)->cells[0], &c3 );
+    ASSERT_EQ( fab->get_bin(5,5)->cells[1], &c4 );
+    
+    delete fab;
+}

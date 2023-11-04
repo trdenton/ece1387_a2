@@ -54,3 +54,12 @@ void fabric::mark_obstruction(int x0, int y0, int x1, int y1) {
         }
     }
 }
+
+void fabric::map_cells(vector<cell*> cells) {
+    for(auto& c: cells) {
+        pair<double,double> coords = c->get_coords();
+        int x = get<0>(coords);
+        int y = get<1>(coords);
+        bins[x][y]->cells.push_back(c);
+    }
+}
