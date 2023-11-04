@@ -111,3 +111,29 @@ TEST(FABRIC, supply_calc) {
     ASSERT_EQ( fab->get_bin(0,1)->supply(), 2);
     delete fab;
 }
+
+TEST(FABRIC, get_overused_bins) {
+    fabric* fab = new fabric(10,10);
+    vector<string> nets = {"a","b"}; // irrelevant
+    cell c1(nets);
+    cell c2(nets);
+    cell c3(nets);
+    cell c4(nets);
+    cell c5(nets);
+    cell c6(nets);
+    vector<cell*> cells = {&c1,&c2,&c3,&c4,&c5,&c6};
+
+    c1.set_coords(1.1,1.1);
+    c2.set_coords(0.0,1.0);
+    c3.set_coords(5.1,5.4);
+    c4.set_coords(5.1,5.4);
+    c5.set_coords(0.4,1.4);
+    c6.set_coords(0.4,1.4);
+
+    fab->map_cells(cells);
+    
+    vector<bin*> overused = fab->get_overused_bins();
+    ASSERT_EQ(overused[0]->supply(), 1);
+    ASSERT_EQ(overused[1]->supply(), 2);
+    delete fab;
+}

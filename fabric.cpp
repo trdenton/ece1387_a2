@@ -79,3 +79,22 @@ void fabric::run_flow_iter(double (*psi)(int, psi_params*)) {
         return;
     }
 }
+
+bool fn_sort_bin_supply(bin* i, bin* j) {
+    return i->supply() < j->supply();
+}
+
+vector<bin*> fabric::get_overused_bins() {
+    vector<bin*> result;
+    for(int i = 0; i < width; i++) {
+        for(int j = 0; j < height; j++) {
+            bin* b = get_bin(i,j);
+            if (b->supply() > 0)
+                result.push_back(b);
+        }
+    } 
+
+    // sort by amount of oversupply
+    sort(result.begin(), result.end(), fn_sort_bin_supply);
+    return result;
+}

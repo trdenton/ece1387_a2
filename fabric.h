@@ -32,6 +32,7 @@ class fabric {
         void map_cells(vector<cell*> cells);
         void run_flow_iter(double (*psi)(int iter, psi_params* h));
         void foreach_bin(void (*fn)(bin* b));
+        vector<bin*> get_overused_bins();
 };
 
 #endif
