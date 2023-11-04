@@ -19,8 +19,10 @@ struct bin {
 class fabric {
     private:
         bin*** bins;
+        int width, height;
     public:
         fabric(int x, int y);
+        ~fabric();
         void add_obstruction(int x0, int y0, int x1, int y1);
         bin* get_bin(int x, int y);
         void map_cells(vector<cell*> cells);

@@ -77,6 +77,7 @@ add_executable(
   matrix_test.cc
   cell_test.cc
   net_test.cc
+  fabric_test.cc
   circuit.cpp
   fabric.cpp
 )
