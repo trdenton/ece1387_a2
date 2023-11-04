@@ -1,6 +1,7 @@
 #ifndef __FABRIC_H__
 #define __FABRIC_H__
 #include <vector>
+#include <algorithm>
 #include "circuit.h"
 
 using namespace std;
@@ -8,10 +9,12 @@ using namespace std;
 struct bin {
     double x;
     double y;
+    int capacity;
     bool usable;
     vector<cell*> cells;
-    double get_supply();
-    double get_demand();
+    int supply() {return max(0, usage() - capacity);};
+    int demand() {return 0.;};
+    int usage() {return cells.size();};
     double map_cell(cell* c);
     void remove_cell(cell* c);
 };

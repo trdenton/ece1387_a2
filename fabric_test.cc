@@ -85,3 +85,29 @@ TEST(Fabric, map_cells) {
     
     delete fab;
 }
+
+TEST(FABRIC, supply_calc) {
+    fabric* fab = new fabric(10,10);
+    vector<string> nets = {"a","b"}; // irrelevant
+    cell c1(nets);
+    cell c2(nets);
+    cell c3(nets);
+    cell c4(nets);
+    cell c5(nets);
+    cell c6(nets);
+    vector<cell*> cells = {&c1,&c2,&c3,&c4,&c5,&c6};
+
+    c1.set_coords(1.1,1.1);
+    c2.set_coords(0.0,1.0);
+    c3.set_coords(5.1,5.5);
+    c4.set_coords(5.1,5.9);
+    c5.set_coords(0.5,1.5);
+    c6.set_coords(0.4,1.5);
+
+    fab->map_cells(cells);
+    
+    ASSERT_EQ( fab->get_bin(1,1)->supply(), 0);
+    ASSERT_EQ( fab->get_bin(5,5)->supply(), 1);
+    ASSERT_EQ( fab->get_bin(0,1)->supply(), 2);
+    delete fab;
+}

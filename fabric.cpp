@@ -16,6 +16,7 @@ fabric::fabric(int x, int y) {
             bins[i][j]->x = (double)i;
             bins[i][j]->y = (double)j;
             bins[i][j]->usable = true;
+            bins[i][j]->capacity = 1; // assumption for this assignment
         }
     }
 }
