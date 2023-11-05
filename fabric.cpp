@@ -74,7 +74,7 @@ void fabric::map_cells(vector<cell*> cells) {
         pair<double,double> coords = c->get_coords();
         int x = round(get<0>(coords));
         int y = round(get<1>(coords));
-        bins[x][y]->cells.push_back(c);
+        bins[x][y]->cells.push(c);
     }
 }
 
@@ -87,10 +87,16 @@ bool fn_sort_candidate_paths(queue<bin*> i, queue<bin*> j) {
 }
 
 void fabric::move_along_path(queue<bin*> path) {
-    spdlog::debug("moving cell over...");
-    bin* f = path.front();
-    bin* b = path.back();
-    spdlog::debug("{},{} -> {},{}",f->x,f->y,b->x,b->y);
+    while(!path.empty()) {
+        bin* tail = path.front(); path.pop(); // starts with an empty bin
+        if (tail->supply() > 0 ) {
+            if (!path.empty()) {
+                bin* next = path.front();
+                cell* c = tail->cells.front(); tail->cells.pop();
+                next->cells.push(c);
+            }
+        }
+    }
 }
 
 void fabric::run_flow(double (*psi)(int iter, psi_params* h), psi_params* h) {

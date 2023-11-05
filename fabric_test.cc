@@ -78,10 +78,10 @@ TEST(Fabric, map_cells) {
     ASSERT_FALSE( fab->get_bin(0,1)->cells.empty());
     ASSERT_FALSE( fab->get_bin(5,5)->cells.empty());
 
-    ASSERT_EQ( fab->get_bin(1,1)->cells[0], &c1 );
-    ASSERT_EQ( fab->get_bin(0,1)->cells[0], &c2 );
-    ASSERT_EQ( fab->get_bin(5,5)->cells[0], &c3 );
-    ASSERT_EQ( fab->get_bin(5,5)->cells[1], &c4 );
+    ASSERT_EQ( fab->get_bin(1,1)->cells.front(), &c1 );
+    ASSERT_EQ( fab->get_bin(0,1)->cells.front(), &c2 );
+    ASSERT_EQ( fab->get_bin(5,5)->cells.front(), &c3 );
+    ASSERT_EQ( fab->get_bin(5,5)->cells.back(), &c4 );
     
     delete fab;
 }
@@ -197,9 +197,9 @@ TEST(Fabric, move_along_path) {
     ASSERT_FALSE(b01->cells.empty());
     ASSERT_FALSE(b00->cells.empty());
     
-    ASSERT_EQ(b02->cells[0], &c2);
-    ASSERT_EQ(b01->cells[0], &c1);
-    ASSERT_EQ(b00->cells[0], &c0);
+    ASSERT_EQ(b02->cells.front(), &c2);
+    ASSERT_EQ(b01->cells.front(), &c0);
+    ASSERT_EQ(b00->cells.front(), &c1);
 
     delete fab;
 }

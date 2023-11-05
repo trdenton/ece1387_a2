@@ -13,7 +13,7 @@ struct bin {
     double y;
     int capacity;
     bool usable;
-    vector<cell*> cells;
+    queue<cell*> cells;
     int supply() {return max(0, usage() - capacity);};
     //int demand() {return 0.;};
     int usage() {return cells.size();};
