@@ -11,7 +11,7 @@ fabric::fabric(int x, int y) {
     bins = new bin**[x+1];
     width=x;
     height=y;
-    for(int i = 0; i <= x; i ++) {      // TODO this seems weird but input file necessitated
+    for(int i = 0; i <= x; i ++) {      // TODO this seems weird but input file necessitated?
         bins[i] = new bin*[y+1];
         for(int j = 0; j <= y; j++) {
             bins[i][j] = new bin;
@@ -75,14 +75,10 @@ void fabric::map_cells(vector<cell*> cells) {
     }
 }
 
-void fabric::run_flow_iter(double (*psi)(int, psi_params*)) {
-    if (psi == nullptr) {
-        spdlog::error("psi doesnt look like a function, I'm giving up");
-        return;
-    }
+void fabric::run_flow_iter(double psi) {
     queue<queue<bin*>> candidate_paths ;
     for(auto& bin : get_overused_bins()) {
-        auto candidate_paths = find_candidate_paths(bin);
+        auto candidate_paths = find_candidate_paths(bin, psi);
     }
 }
 
@@ -110,28 +106,46 @@ vector<bin*> fabric::get_neighbours(bin* b) {
     return ns;
 }
 
-queue<queue<bin*>> fabric::find_candidate_paths(bin* b) {
+static double compute_cost(bin* bi, bin* bk) {
+    double dx = bk->x - bi->x;
+    double dy = bk->y - bi->y;
+    return (dx*dx) + (dy*dy);
+}
+
+queue<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
     queue<queue<bin*>> paths;
     // mark all bins as not visited
     // mark this particular bin as visited
 
     // a path is a queue<bin*>
+    double demand = 0.;
 
     map<bin*,bool> bins_visited;
     // semantics: if it isnt in the map, it hasnt been visited
-    bins_visited[b] = true;
+    bins_visited[bi] = true;
     
     queue<bin*> first_path; 
-    first_path.push(b);
+    first_path.push(bi);
     paths.push(first_path);
 
     while (paths.empty() == false) {
-        queue<bin*> current_path;
-        current_path = paths.front(); paths.pop();
+        queue<bin*> p;
+        p = paths.front(); paths.pop();
 
         // get possible next paths
-        bin* b = current_path.front();
-        vector<bin*> neighbours = get_neighbours(b);
+        bin* tailbin = p.front();
+        vector<bin*> neighbours = get_neighbours(tailbin);
+        for(auto&bk : neighbours) {
+            
+            if (bins_visited.find(bk) == bins_visited.end()) { // if not visited
+                double cost = compute_cost(bi, bk);
+                if (cost < psi) {
+                    auto pcopy = queue<bin*>(p);
+                    p.push(bk);
+                }
+                bins_visited[bk] = true;
+            }
+        }
     }
     
     

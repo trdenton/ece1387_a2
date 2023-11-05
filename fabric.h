@@ -34,11 +34,11 @@ class fabric {
         void mark_obstruction(int x0, int y0, int x1, int y1);
         bin* get_bin(int x, int y);
         void map_cells(vector<cell*> cells);
-        void run_flow_iter(double (*psi)(int iter, psi_params* h));
+        void run_flow_iter(double);
         void foreach_bin(void (*fn)(bin* b));
         vector<bin*> get_overused_bins();
         vector<bin*> get_neighbours();
-        queue<queue<bin*>> find_candidate_paths(bin*);
+        queue<queue<bin*>> find_candidate_paths(bin*,double);
         vector<bin*> get_neighbours(bin* b);
 };
 
