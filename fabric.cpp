@@ -86,7 +86,7 @@ bool fn_sort_candidate_paths(queue<bin*> i, queue<bin*> j) {
     return cost_i < cost_j;
 }
 
-void fabric::move_cells_over(queue<bin*> path) {
+void fabric::move_along_path(queue<bin*> path) {
     spdlog::debug("moving cell over...");
     bin* f = path.front();
     bin* b = path.back();
@@ -111,7 +111,7 @@ void fabric::run_flow_iter(double psi) {
     sort(candidate_paths.begin(), candidate_paths.end(), fn_sort_candidate_paths);
     for(auto& pk : candidate_paths) {
         if (bi->supply() > 0) {
-            move_cells_over(pk);
+            move_along_path(pk);
         }
     }
 }

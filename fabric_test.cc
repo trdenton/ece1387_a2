@@ -162,3 +162,44 @@ TEST(Fabric, get_neighbours_unusable) {
     ASSERT_EQ(n1.size(),3);
     delete fab;
 }
+
+TEST(Fabric, move_along_path) {
+    fabric* fab = new fabric(10,10);
+    
+    vector<string> nets = {"a","b"}; // irrelevant
+    cell c0(nets);
+    cell c1(nets);
+    cell c2(nets);
+
+    c0.set_coords(0.1,0.1);
+    c1.set_coords(0.1,0.2);
+    c2.set_coords(0.1,1.1);
+    
+    vector<cell*> cells = {&c0,&c1,&c2};
+    fab->map_cells(cells);
+
+    queue<bin*> pk;
+
+    // the first one is the source cell
+    bin* b00 = fab->get_bin(0,0);
+    bin* b01 = fab->get_bin(0,1);
+    bin* b02 = fab->get_bin(0,2);
+
+    pk.push(b00);
+    pk.push(b01);
+    pk.push(b02);
+
+    fab->move_along_path(pk);
+
+    //started with c1 and c2 in b00, c3 in b01
+    //should end with c1 in b00, c2 in b01, c3 in b02
+    ASSERT_FALSE(b02->cells.empty());
+    ASSERT_FALSE(b01->cells.empty());
+    ASSERT_FALSE(b00->cells.empty());
+    
+    ASSERT_EQ(b02->cells[0], &c2);
+    ASSERT_EQ(b01->cells[0], &c1);
+    ASSERT_EQ(b00->cells[0], &c0);
+
+    delete fab;
+}

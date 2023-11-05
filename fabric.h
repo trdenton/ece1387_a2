@@ -40,7 +40,7 @@ class fabric {
         vector<bin*> get_neighbours();
         vector<queue<bin*>> find_candidate_paths(bin*,double);
         vector<bin*> get_neighbours(bin* b);
-        void move_cells_over(queue<bin*> path);
+        void move_along_path(queue<bin*> path);
         void run_flow(double (*psi)(int iter, psi_params* h), psi_params* h);
 };
 
