@@ -15,7 +15,7 @@ struct bin {
     bool usable;
     vector<cell*> cells;
     int supply() {return max(0, usage() - capacity);};
-    int demand() {return 0.;};
+    //int demand() {return 0.;};
     int usage() {return cells.size();};
     double map_cell(cell* c);
     void remove_cell(cell* c);

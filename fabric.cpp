@@ -113,12 +113,14 @@ static double compute_cost(bin* bi, bin* bk) {
 }
 
 queue<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
-    queue<queue<bin*>> paths;
+    // TODO could this just be a vector?
+    queue<queue<bin*>> P; // these are complete paths
+    queue<queue<bin*>> paths; // this is our working FIFO of paths
     // mark all bins as not visited
     // mark this particular bin as visited
 
     // a path is a queue<bin*>
-    double demand = 0.;
+    int demand = 0;
 
     map<bin*,bool> bins_visited;
     // semantics: if it isnt in the map, it hasnt been visited
@@ -128,7 +130,7 @@ queue<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
     first_path.push(bi);
     paths.push(first_path);
 
-    while (paths.empty() == false) {
+    while (paths.empty() == false && demand < bi->supply()) {
         queue<bin*> p;
         p = paths.front(); paths.pop();
 
@@ -136,12 +138,19 @@ queue<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
         bin* tailbin = p.front();
         vector<bin*> neighbours = get_neighbours(tailbin);
         for(auto&bk : neighbours) {
-            
             if (bins_visited.find(bk) == bins_visited.end()) { // if not visited
                 double cost = compute_cost(bi, bk);
                 if (cost < psi) {
                     auto pcopy = queue<bin*>(p);
-                    p.push(bk);
+                    pcopy.push(bk);
+
+                    if (bk->supply() == 0) {
+                        P.push(pcopy);
+                        demand++;
+                    } else {
+                        paths.push(pcopy);
+                    }
+
                 }
                 bins_visited[bk] = true;
             }
