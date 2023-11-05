@@ -2,6 +2,8 @@
 #include "circuit.h"
 #include "spdlog/spdlog.h"
 #include <vector>
+#include <queue>
+#include <map>
 
 using namespace std;
 
@@ -9,7 +11,7 @@ fabric::fabric(int x, int y) {
     bins = new bin**[x+1];
     width=x;
     height=y;
-    for(int i = 0; i <= x; i ++) {
+    for(int i = 0; i <= x; i ++) {      // TODO this seems weird but input file necessitated
         bins[i] = new bin*[y+1];
         for(int j = 0; j <= y; j++) {
             bins[i][j] = new bin;
@@ -78,10 +80,62 @@ void fabric::run_flow_iter(double (*psi)(int, psi_params*)) {
         spdlog::error("psi doesnt look like a function, I'm giving up");
         return;
     }
+    queue<queue<bin*>> candidate_paths ;
+    for(auto& bin : get_overused_bins()) {
+        auto candidate_paths = find_candidate_paths(bin);
+    }
 }
 
 bool fn_sort_bin_supply(bin* i, bin* j) {
     return i->supply() < j->supply();
+}
+
+vector<bin*> fabric::get_neighbours(bin* b) {
+    vector<bin*> ns;
+    int x = b->x;
+    int y = b->y;
+
+    if ((x - 1 >= 0) && get_bin(x-1,y)->usable)
+        ns.push_back(get_bin(x-1,y));
+
+    if ((x + 1 < width) && get_bin(x+1,y)->usable)
+        ns.push_back(get_bin(x+1,y));
+
+    if ((y - 1 >= 0) && get_bin(x,y-1)->usable)
+        ns.push_back(get_bin(x,y-1));
+
+    if ((y + 1 < height) && get_bin(x,y+1)->usable)
+        ns.push_back(get_bin(x,y+1));
+
+    return ns;
+}
+
+queue<queue<bin*>> fabric::find_candidate_paths(bin* b) {
+    queue<queue<bin*>> paths;
+    // mark all bins as not visited
+    // mark this particular bin as visited
+
+    // a path is a queue<bin*>
+
+    map<bin*,bool> bins_visited;
+    // semantics: if it isnt in the map, it hasnt been visited
+    bins_visited[b] = true;
+    
+    queue<bin*> first_path; 
+    first_path.push(b);
+    paths.push(first_path);
+
+    while (paths.empty() == false) {
+        queue<bin*> current_path;
+        current_path = paths.front(); paths.pop();
+
+        // get possible next paths
+        bin* b = current_path.front();
+        vector<bin*> neighbours = get_neighbours(b);
+    }
+    
+    
+    return paths;
 }
 
 vector<bin*> fabric::get_overused_bins() {

@@ -2,6 +2,7 @@
 #define __FABRIC_H__
 #include <vector>
 #include <algorithm>
+#include <queue>
 #include "circuit.h"
 #include "psis.h"
 
@@ -20,6 +21,9 @@ struct bin {
     void remove_cell(cell* c);
 };
 
+// path - is it just a list of bins?
+// . Each path is a queue of bins whose first element is the overflowed bin λi . 
+
 class fabric {
     private:
         bin*** bins;
@@ -33,6 +37,9 @@ class fabric {
         void run_flow_iter(double (*psi)(int iter, psi_params* h));
         void foreach_bin(void (*fn)(bin* b));
         vector<bin*> get_overused_bins();
+        vector<bin*> get_neighbours();
+        queue<queue<bin*>> find_candidate_paths(bin*);
+        vector<bin*> get_neighbours(bin* b);
 };
 
 #endif

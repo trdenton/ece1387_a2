@@ -137,3 +137,28 @@ TEST(FABRIC, get_overused_bins) {
     ASSERT_EQ(overused[1]->supply(), 2);
     delete fab;
 }
+
+TEST(FABRIC, get_neighbours) {
+    fabric* fab = new fabric(10,10);
+
+    vector<bin*> n1 = fab->get_neighbours(fab->get_bin(3,3));
+    ASSERT_EQ(n1.size(),4);
+    delete fab;
+}
+
+TEST(FABRIC, get_neighbours_edge) {
+    fabric* fab = new fabric(10,10);
+
+    vector<bin*> n1 = fab->get_neighbours(fab->get_bin(0,3));
+    ASSERT_EQ(n1.size(),3);
+    delete fab;
+}
+
+TEST(FABRIC, get_neighbours_unusable) {
+    fabric* fab = new fabric(10,10);
+    fab->mark_obstruction(2,3,2,3); // this is exactly one block
+
+    vector<bin*> n1 = fab->get_neighbours(fab->get_bin(3,3));
+    ASSERT_EQ(n1.size(),3);
+    delete fab;
+}
