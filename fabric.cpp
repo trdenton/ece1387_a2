@@ -112,9 +112,8 @@ static double compute_cost(bin* bi, bin* bk) {
     return (dx*dx) + (dy*dy);
 }
 
-queue<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
-    // TODO could this just be a vector?
-    queue<queue<bin*>> P; // these are complete paths
+vector<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
+    vector<queue<bin*>> P; // these are complete paths
     queue<queue<bin*>> paths; // this is our working FIFO of paths
     // mark all bins as not visited
     // mark this particular bin as visited
@@ -145,7 +144,7 @@ queue<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
                     pcopy.push(bk);
 
                     if (bk->supply() == 0) {
-                        P.push(pcopy);
+                        P.push_back(pcopy);
                         demand++;
                     } else {
                         paths.push(pcopy);
@@ -158,7 +157,7 @@ queue<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
     }
     
     
-    return paths;
+    return P;
 }
 
 vector<bin*> fabric::get_overused_bins() {

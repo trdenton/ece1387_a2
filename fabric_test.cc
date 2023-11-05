@@ -86,7 +86,7 @@ TEST(Fabric, map_cells) {
     delete fab;
 }
 
-TEST(FABRIC, supply_calc) {
+TEST(Fabric, supply_calc) {
     fabric* fab = new fabric(10,10);
     vector<string> nets = {"a","b"}; // irrelevant
     cell c1(nets);
@@ -112,7 +112,7 @@ TEST(FABRIC, supply_calc) {
     delete fab;
 }
 
-TEST(FABRIC, get_overused_bins) {
+TEST(Fabric, get_overused_bins) {
     fabric* fab = new fabric(10,10);
     vector<string> nets = {"a","b"}; // irrelevant
     cell c1(nets);
@@ -138,7 +138,7 @@ TEST(FABRIC, get_overused_bins) {
     delete fab;
 }
 
-TEST(FABRIC, get_neighbours) {
+TEST(Fabric, get_neighbours) {
     fabric* fab = new fabric(10,10);
 
     vector<bin*> n1 = fab->get_neighbours(fab->get_bin(3,3));
@@ -146,7 +146,7 @@ TEST(FABRIC, get_neighbours) {
     delete fab;
 }
 
-TEST(FABRIC, get_neighbours_edge) {
+TEST(Fabric, get_neighbours_edge) {
     fabric* fab = new fabric(10,10);
 
     vector<bin*> n1 = fab->get_neighbours(fab->get_bin(0,3));
@@ -154,7 +154,7 @@ TEST(FABRIC, get_neighbours_edge) {
     delete fab;
 }
 
-TEST(FABRIC, get_neighbours_unusable) {
+TEST(Fabric, get_neighbours_unusable) {
     fabric* fab = new fabric(10,10);
     fab->mark_obstruction(2,3,2,3); // this is exactly one block
 
