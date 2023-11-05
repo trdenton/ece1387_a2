@@ -131,6 +131,9 @@ int main(int n, char** args) {
     fab->mark_obstruction(2,2,9,9);
     fab->map_cells(circ->get_cells());
 
+
+    psi_params pps = {.a= 0.5, .b= 0.5};
+    fab->run_flow(&psi_quadratic, &pps);
     if (interactive) {
         spdlog::info("Entering interactive mode");
         ui_init(circ,fab);

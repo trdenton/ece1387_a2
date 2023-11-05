@@ -5,6 +5,9 @@
 #include <queue>
 #include <map>
 
+// forward declarations
+static double compute_cost(bin* bi, bin* bk);
+
 using namespace std;
 
 fabric::fabric(int x, int y) {
@@ -75,10 +78,41 @@ void fabric::map_cells(vector<cell*> cells) {
     }
 }
 
+bool fn_sort_candidate_paths(queue<bin*> i, queue<bin*> j) {
+    // compare cost
+    // need last element and first element
+    double cost_i = compute_cost(i.front(), i.back());
+    double cost_j = compute_cost(j.front(), j.back());
+    return cost_i < cost_j;
+}
+
+void fabric::move_cells_over(queue<bin*> path) {
+    spdlog::debug("moving cell over...");
+    bin* f = path.front();
+    bin* b = path.back();
+    spdlog::debug("{},{} -> {},{}",f->x,f->y,b->x,b->y);
+}
+
+void fabric::run_flow(double (*psi)(int iter, psi_params* h), psi_params* h) {
+    int iter=0;
+    if (psi == nullptr || h == nullptr) {
+        spdlog::error("psi or psi_param is null");
+    }
+    while (get_overused_bins().empty() == false) {
+        double p = psi(iter,h);
+        run_flow_iter(p);
+        iter++;
+    }
+}
 void fabric::run_flow_iter(double psi) {
-    queue<queue<bin*>> candidate_paths ;
-    for(auto& bin : get_overused_bins()) {
-        auto candidate_paths = find_candidate_paths(bin, psi);
+    vector<queue<bin*>> candidate_paths ;
+    bin* bi = get_overused_bins()[0];
+    candidate_paths = find_candidate_paths(bi, psi);
+    sort(candidate_paths.begin(), candidate_paths.end(), fn_sort_candidate_paths);
+    for(auto& pk : candidate_paths) {
+        if (bi->supply() > 0) {
+            move_cells_over(pk);
+        }
     }
 }
 

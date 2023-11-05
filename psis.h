@@ -6,7 +6,7 @@ struct psi_params {
 };
 
 double psi_linear(int inter, psi_params* h);
-double psi_quadratic(int inter);
-double psi_cubic(int inter);
+double psi_quadratic(int inter, psi_params* h);
+double psi_cubic(int inter, psi_params* h);
 
 #endif
