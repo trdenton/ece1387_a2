@@ -69,7 +69,7 @@ void ui_draw_cell_fn(circuit* circ, cell* c) {
 
     setcolor(c->is_fixed() ? MAGENTA : GREEN);
     setlinewidth(2);
-    drawrect(x - width/2, y - height/2, x + width/2, y + width/2);
+    drawarc(x,y,width/2.,0.,360.);
     setlinewidth(1);
 }
 
