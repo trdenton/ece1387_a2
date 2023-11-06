@@ -131,7 +131,7 @@ int main(int n, char** args) {
     fab->mark_obstruction(2,2,9,9);
     fab->map_cells(circ->get_cells());
 
-    psi_params pps = {.a= 0.05, .b= 0.05};
+    psi_params pps = {.a= 0.5, .b= 0.2};
     flow_state fs = {.iter=0, .psi_fn = &psi_quadratic, .h = pps, .step = step};
 
 

@@ -241,44 +241,46 @@ vector<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
     vector<queue<bin*>> P; // these are complete paths
     queue<queue<bin*>> paths; // this is our working FIFO of paths
 
-    // a path is a queue<bin*>
-    int demand = 0;
+    int demand = 0; // total demand we've built while generating paths
 
     map<bin*,bool> bins_visited;
     // semantics: if it isnt in the map, it hasnt been visited
     bins_visited[bi] = true;
     
+    spdlog::debug("overflowed bi @ {},{}", bi->x, bi->y);
     queue<bin*> first_path; 
     first_path.push(bi);
     paths.push(first_path);
 
-    while (paths.empty() == false && demand < bi->supply()) {
+    while ((!paths.empty()) && demand < bi->supply()) {
         queue<bin*> p;
         p = paths.front(); paths.pop();
 
         // get possible next paths
-        bin* tailbin = p.front();
+        bin* tailbin = p.back();
         vector<bin*> neighbours = get_neighbours(tailbin);
         for(auto& bk : neighbours) {
+            spdlog::debug("checking out bk @ {},{}", bk->x, bk->y);
             if (bins_visited.find(bk) == bins_visited.end()) { // if not visited
+                bins_visited[bk] = true;
                 double cost = compute_cost(bi, bk);
                 if (cost < psi) {
-                    auto pcopy = queue<bin*>(p);
+                    queue<bin*> pcopy = queue<bin*>(p);
                     pcopy.push(bk);
 
-                    if (bk->supply() == 0) {
+                    if (bk->cells.empty()) {
                         P.push_back(pcopy);
                         demand++;
                     } else {
                         paths.push(pcopy);
                     }
 
+                } else {
+                    spdlog::debug("WOAH we cant afford that??");
                 }
-                bins_visited[bk] = true;
             }
         }
     }
-    
     
     return P;
 }
