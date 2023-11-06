@@ -56,6 +56,7 @@ class cell {
         bool is_connected_to(cell* other);
         vector<string> get_mutual_net_labels(cell* other);
         bool is_fixed();
+        double distance_to(cell* other);
 };
 
 struct solver_matrix {

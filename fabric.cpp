@@ -1,8 +1,10 @@
 #include "fabric.h"
 #include "circuit.h"
 #include "spdlog/spdlog.h"
+#include <math.h>
 #include <vector>
 #include <queue>
+#include <stack>
 #include <map>
 
 // forward declarations
@@ -74,7 +76,7 @@ void fabric::map_cells(vector<cell*> cells) {
         pair<double,double> coords = c->get_coords();
         int x = round(get<0>(coords));
         int y = round(get<1>(coords));
-        bins[x][y]->cells.push(c);
+        bins[x][y]->cells.push_back(c);
     }
 }
 
@@ -86,16 +88,44 @@ bool fn_sort_candidate_paths(queue<bin*> i, queue<bin*> j) {
     return cost_i < cost_j;
 }
 
-void fabric::move_along_path(queue<bin*> path) {
+double distance_cell_to_bin(cell* i, bin* j) {
+    pair<double,double> p0 = i->get_coords();
+    double x1 = j->x;
+    double y1 = j->y;
+    
+    double dx = x1 - get<0>(p0);
+    double dy = y1 - get<1>(p0);
+    
+    return sqrt(dx*dx + dy*dy);
+}
+
+bin* g_nearest_ref;
+bool fn_sort_nearest(cell* i, cell* j) {
+    return (distance_cell_to_bin(i,g_nearest_ref) < distance_cell_to_bin(j,g_nearest_ref));
+}
+
+void fabric::move_along_path(queue<bin*> path, double psi) {
+    stack<bin*> S;
+    bin* vsrc = path.front(); path.pop();
+    S.push(vsrc);
     while(!path.empty()) {
-        bin* tail = path.front(); path.pop(); // starts with an empty bin
-        if (tail->supply() > 0 ) {
-            if (!path.empty()) {
-                bin* next = path.front();
-                cell* c = tail->cells.front(); tail->cells.pop();
-                next->cells.push(c);
-            }
+        bin* vsink = path.front(); path.pop(); // starts with an empty bin
+        double cost = compute_cost(vsrc,vsink);
+        if (cost < psi) {
+            S.push(vsink);
+        } else {
+            return;
         }
+    }
+    bin* vsink = S.top(); S.pop();
+    while(!S.empty()) {
+        vsrc = S.top(); S.pop();
+        vector<cell*> cells = vector<cell*>(vsrc->cells);
+        g_nearest_ref = vsink;
+        sort(vsrc->cells.begin(), vsrc->cells.end(), fn_sort_nearest);
+        vsink->cells.push_back(vsrc->cells[0]);        
+        vsrc->cells.erase(vsrc->cells.begin());
+        vsink = vsrc;
     }
 }
 
@@ -117,7 +147,7 @@ void fabric::run_flow_iter(double psi) {
     sort(candidate_paths.begin(), candidate_paths.end(), fn_sort_candidate_paths);
     for(auto& pk : candidate_paths) {
         if (bi->supply() > 0) {
-            move_along_path(pk);
+            move_along_path(pk, psi);
         }
     }
 }
@@ -176,7 +206,7 @@ vector<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
         // get possible next paths
         bin* tailbin = p.front();
         vector<bin*> neighbours = get_neighbours(tailbin);
-        for(auto&bk : neighbours) {
+        for(auto& bk : neighbours) {
             if (bins_visited.find(bk) == bins_visited.end()) { // if not visited
                 double cost = compute_cost(bi, bk);
                 if (cost < psi) {

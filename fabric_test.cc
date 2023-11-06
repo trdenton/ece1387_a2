@@ -172,8 +172,8 @@ TEST(Fabric, move_along_path) {
     cell c2(nets);
 
     c0.set_coords(0.1,0.1);
-    c1.set_coords(0.1,0.2);
-    c2.set_coords(0.1,1.1);
+    c1.set_coords(0.2,0.2);
+    c2.set_coords(0.3,1.1);
     
     vector<cell*> cells = {&c0,&c1,&c2};
     fab->map_cells(cells);
@@ -181,15 +181,15 @@ TEST(Fabric, move_along_path) {
     queue<bin*> pk;
 
     // the first one is the source cell
-    bin* b00 = fab->get_bin(0,0);
-    bin* b01 = fab->get_bin(0,1);
+    bin* b00 = fab->get_bin(0,0);   // c0 and c1 are here
+    bin* b01 = fab->get_bin(0,1);   // c2 is here
     bin* b02 = fab->get_bin(0,2);
 
     pk.push(b00);
     pk.push(b01);
     pk.push(b02);
 
-    fab->move_along_path(pk);
+    fab->move_along_path(pk,99999.);
 
     //started with c1 and c2 in b00, c3 in b01
     //should end with c1 in b00, c2 in b01, c3 in b02
@@ -197,9 +197,14 @@ TEST(Fabric, move_along_path) {
     ASSERT_FALSE(b01->cells.empty());
     ASSERT_FALSE(b00->cells.empty());
     
+    ASSERT_EQ(b02->cells.size(), 1);
+    ASSERT_EQ(b01->cells.size(), 1);
+    ASSERT_EQ(b00->cells.size(), 1);
+
     ASSERT_EQ(b02->cells.front(), &c2);
-    ASSERT_EQ(b01->cells.front(), &c0);
-    ASSERT_EQ(b00->cells.front(), &c1);
+    ASSERT_EQ(b01->cells.front(), &c1);
+    ASSERT_EQ(b00->cells.front(), &c0);
+
 
     delete fab;
 }

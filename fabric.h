@@ -13,7 +13,7 @@ struct bin {
     double y;
     int capacity;
     bool usable;
-    queue<cell*> cells;
+    vector<cell*> cells;
     int supply() {return max(0, usage() - capacity);};
     //int demand() {return 0.;};
     int usage() {return cells.size();};
@@ -40,7 +40,7 @@ class fabric {
         vector<bin*> get_neighbours();
         vector<queue<bin*>> find_candidate_paths(bin*,double);
         vector<bin*> get_neighbours(bin* b);
-        void move_along_path(queue<bin*> path);
+        void move_along_path(queue<bin*> path, double);
         void run_flow(double (*psi)(int iter, psi_params* h), psi_params* h);
 };
 

@@ -1,5 +1,6 @@
 #include "circuit.h"
 #include <string>
+#include <math.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -458,6 +459,15 @@ vector<string> cell::get_mutual_net_labels(cell* other) {
                      other_net_labels_ordered.begin(), other_net_labels_ordered.end(),
                      back_inserter(intersection));
     return intersection;
+}
+
+double cell::distance_to(cell* other) {
+    pair<double,double> p0 = get_coords(), p1 = other->get_coords();
+
+    double dx = get<0>(p1) - get<0>(p0);
+    double dy = get<1>(p1) - get<1>(p0);
+
+    return sqrt(dx*dx + dy*dy);
 }
 
 
