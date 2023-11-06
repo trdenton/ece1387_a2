@@ -20,10 +20,39 @@ circuit* circ;
 fabric* fab;
 flow_state* fs;
 
+bool draw_rats_nest = true;
+bool draw_cells = true;
+int iter_delay = -1;
 
 void ui_pump(void (*draw)()) {
     circuit_next_step();
     draw();
+}
+
+void ui_toggle_rat(void(*draw)()) {
+    draw_rats_nest = !draw_rats_nest;
+    draw();
+}
+
+void ui_toggle_cell(void(*draw)()) {
+    draw_cells = !draw_cells;
+    draw();
+}
+
+void ui_speed_0x(void(*draw)()) {
+    iter_delay = -1;
+}
+
+void ui_speed_1x(void(*draw)()) {
+    iter_delay = 1;
+}
+
+void ui_speed_p1x(void(*draw)()) {
+    iter_delay = 10;
+}
+
+void ui_speed_p01x(void(*draw)()) {
+    iter_delay = 100;
 }
 
 void ui_init(circuit* circuit, fabric* fabric, flow_state* flow_state) {
@@ -32,7 +61,11 @@ void ui_init(circuit* circuit, fabric* fabric, flow_state* flow_state) {
     fs = flow_state;
     spdlog::info("Init UI");
     init_graphics("A1", BLACK);
-    //create_button("Proceed","PUMP", ui_pump);
+    create_button("Proceed","TOGGLE RAT", ui_toggle_rat);
+    create_button("TOGGLE RAT","TOGGLE CELL", ui_toggle_cell);
+    create_button("TOGGLE CELL","SPEED 1x", ui_speed_1x);
+    create_button("SPEED 1x","SPEED .1x", ui_speed_p1x);
+    create_button("SPEED .1x","SPEED .01x", ui_speed_p01x);
     init_world(3.,22.,22.,3.);
     set_keypress_input(true);
     //set_mouse_move_input(true);
@@ -124,6 +157,12 @@ void ui_draw_bin_fn(bin* b) {
             LIGHTGREY);
 
     ( b->usable && b->usage() == 0 ? drawrect : fillrect)(x - width/2, y - height/2, x + width/2, y + width/2);
+    if (b->supply() > 0) {
+        setcolor(BLACK);
+        char buff[32] = {'\0'};
+        snprintf(buff,32,"%d",b->supply());
+        drawtext(x, y, buff, 10.0);
+    }
 }
 
 void ui_draw_cells(circuit* circ){
@@ -147,6 +186,8 @@ void ui_draw_rats_nest(circuit* circ){
 
 void ui_draw(circuit* circ) {
     ui_draw_bins(fab);
-    ui_draw_rats_nest(circ);
-    ui_draw_cells(circ);
+    if (draw_rats_nest)
+        ui_draw_rats_nest(circ);
+    if (draw_cells)
+        ui_draw_cells(circ);
 }
