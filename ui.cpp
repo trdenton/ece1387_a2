@@ -95,8 +95,7 @@ void ui_drawscreen() {
     if (fs->step) {
         fab->run_flow_step(fs);
         clear++;
-        if (clear%10 == 0)
-            clearscreen();
+        clearscreen();
     }
     else
         clearscreen();
