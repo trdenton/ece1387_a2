@@ -132,7 +132,8 @@ int main(int n, char** args) {
     fab->map_cells(circ->get_cells());
 
 
-    psi_params pps = {.a= 0.5, .b= 0.5};
+    psi_params pps = {.a= 0.05, .b= 0.05};
+    spdlog::debug("Running flow");
     fab->run_flow(&psi_quadratic, &pps);
     if (interactive) {
         spdlog::info("Entering interactive mode");

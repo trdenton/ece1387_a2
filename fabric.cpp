@@ -123,6 +123,10 @@ void fabric::move_along_path(queue<bin*> path, double psi) {
         vector<cell*> cells = vector<cell*>(vsrc->cells);
         g_nearest_ref = vsink;
         sort(vsrc->cells.begin(), vsrc->cells.end(), fn_sort_nearest);
+        spdlog::debug("moving cell {} from {},{} to {},{}",vsrc->cells[0]->label, 
+            vsrc->x, vsrc->y,
+            vsink->x, vsink->y
+            );
         vsink->cells.push_back(vsrc->cells[0]);        
         vsrc->cells.erase(vsrc->cells.begin());
         vsink = vsrc;
@@ -136,6 +140,8 @@ void fabric::run_flow(double (*psi)(int iter, psi_params* h), psi_params* h) {
     }
     while (get_overused_bins().empty() == false) {
         double p = psi(iter,h);
+        spdlog::debug("Flow iteration {} - setting p to {}", iter, p);
+        spdlog::debug("Overused bins: {}", get_overused_bins().size());
         run_flow_iter(p);
         iter++;
     }
@@ -185,8 +191,6 @@ static double compute_cost(bin* bi, bin* bk) {
 vector<queue<bin*>> fabric::find_candidate_paths(bin* bi, double psi) {
     vector<queue<bin*>> P; // these are complete paths
     queue<queue<bin*>> paths; // this is our working FIFO of paths
-    // mark all bins as not visited
-    // mark this particular bin as visited
 
     // a path is a queue<bin*>
     int demand = 0;
