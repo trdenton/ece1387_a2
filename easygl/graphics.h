@@ -238,4 +238,6 @@ int findfontsize(float ymax);
 
 #endif // WIN32
 
+void set_interval(unsigned long i);
+
 #endif // GRAPHICS_H

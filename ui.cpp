@@ -6,6 +6,9 @@
 #include "ui.h"
 #include "fabric.h"
 #include <condition_variable>
+#include <unistd.h>
+#include <sys/time.h>
+#include <signal.h>
 using namespace std;
 
 // Callbacks for event-driven window handling.
@@ -22,7 +25,9 @@ flow_state* fs;
 
 bool draw_rats_nest = true;
 bool draw_cells = true;
-int iter_delay = -1;
+
+sig_atomic_t update;
+
 
 void ui_pump(void (*draw)()) {
     circuit_next_step();
@@ -40,19 +45,19 @@ void ui_toggle_cell(void(*draw)()) {
 }
 
 void ui_speed_0x(void(*draw)()) {
-    iter_delay = -1;
+    set_interval(0UL);
 }
 
 void ui_speed_1x(void(*draw)()) {
-    iter_delay = 1;
+    set_interval(10000);
 }
 
 void ui_speed_p1x(void(*draw)()) {
-    iter_delay = 10;
+    set_interval(100000);
 }
 
 void ui_speed_p01x(void(*draw)()) {
-    iter_delay = 100;
+    set_interval(1000000);
 }
 
 void ui_init(circuit* circuit, fabric* fabric, flow_state* flow_state) {
@@ -63,12 +68,14 @@ void ui_init(circuit* circuit, fabric* fabric, flow_state* flow_state) {
     init_graphics("A1", BLACK);
     create_button("Proceed","TOGGLE RAT", ui_toggle_rat);
     create_button("TOGGLE RAT","TOGGLE CELL", ui_toggle_cell);
-    create_button("TOGGLE CELL","SPEED 1x", ui_speed_1x);
+    create_button("TOGGLE CELL","SPEED 0x", ui_speed_0x);
+    create_button("SPEED 0x","SPEED 1x", ui_speed_1x);
     create_button("SPEED 1x","SPEED .1x", ui_speed_p1x);
     create_button("SPEED .1x","SPEED .01x", ui_speed_p01x);
     init_world(3.,22.,22.,3.);
     set_keypress_input(true);
     //set_mouse_move_input(true);
+
     event_loop(ui_click_handler, ui_mouse_handler, ui_key_handler, ui_drawscreen);   
 }
 
@@ -78,8 +85,11 @@ void ui_teardown() {
 
 void ui_drawscreen() {
     clearscreen();
-    spdlog::debug("DRAW SCREEN");
-	set_draw_mode (DRAW_NORMAL);  // Should set this if your program does any XOR drawing in callbacks.
+    set_draw_mode (DRAW_NORMAL);  // Should set this if your program does any XOR drawing in callbacks.
+    if (fs->step)
+        fab->run_flow_step(fs);
+
+
     ui_draw(circ);
 }
 

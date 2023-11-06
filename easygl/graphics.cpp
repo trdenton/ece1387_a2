@@ -154,6 +154,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "graphics.h"
 
 
@@ -1274,6 +1275,11 @@ update_ps_transform (void)
 }
 
 
+unsigned long interval = 0UL;
+void set_interval(unsigned long i) {
+    interval = i;
+}
+
 /* The program's main event loop.  Must be passed a user routine        
 * drawscreen which redraws the screen.  It handles all window resizing 
 * zooming etc. itself.  If the user clicks a mousebutton in the graphics    
@@ -1295,7 +1301,16 @@ event_loop (void (*act_on_mousebutton)(float x, float y),
 	
 	turn_on_off (ON);
 	while (1) {
-		XNextEvent (display, &report);
+	    long event_mask = ExposureMask | StructureNotifyMask |
+		ButtonPressMask | PointerMotionMask | KeyPressMask;
+	
+		if (false == XCheckMaskEvent (display, event_mask, &report)){
+            if (interval > 0UL) {
+                usleep(interval);
+                drawscreen();
+            }
+            continue;
+        }
 		switch (report.type) {  
 		case Expose:
 #ifdef VERBOSE 
