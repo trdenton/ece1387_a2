@@ -16,6 +16,7 @@ void ui_drawscreen();
 void ui_click_handler (float x, float y);
 void ui_mouse_handler (float x, float y);
 void ui_key_handler(char c);
+void ui_draw_bin__path(vector<bin*> b);
 
 float logic_cell_width = 10.0;
 
@@ -25,9 +26,9 @@ flow_state* fs;
 
 bool draw_rats_nest = true;
 bool draw_cells = true;
+bool draw_paths = true;
 
 sig_atomic_t update;
-
 
 void ui_pump(void (*draw)()) {
     circuit_next_step();
@@ -42,6 +43,10 @@ void ui_toggle_rat(void(*draw)()) {
 void ui_toggle_cell(void(*draw)()) {
     draw_cells = !draw_cells;
     draw();
+}
+
+void ui_toggle_paths(void(*draw)()) {
+    draw_paths = !draw_paths;
 }
 
 void ui_speed_0x(void(*draw)()) {
@@ -68,7 +73,8 @@ void ui_init(circuit* circuit, fabric* fabric, flow_state* flow_state) {
     init_graphics("A1", BLACK);
     create_button("Proceed","TOGGLE RAT", ui_toggle_rat);
     create_button("TOGGLE RAT","TOGGLE CELL", ui_toggle_cell);
-    create_button("TOGGLE CELL","SPEED 0x", ui_speed_0x);
+    create_button("TOGGLE CELL","TOGGLE PATHS", ui_toggle_paths);
+    create_button("TOGGLE PATHS","SPEED 0x", ui_speed_0x);
     create_button("SPEED 0x","SPEED 1x", ui_speed_1x);
     create_button("SPEED 1x","SPEED .1x", ui_speed_p1x);
     create_button("SPEED .1x","SPEED .01x", ui_speed_p01x);
@@ -110,15 +116,24 @@ void ui_key_handler(char c) {
 	spdlog::debug("keypress {}",c);
     if (c=='n') {
         spdlog::debug("NEXT",c);
+        clearscreen();
         ui_drawscreen();
         if (fs->step) {
             fab->run_flow_step(fs);
-            ui_draw_fs(fs);
         }
     }
 }
 
 void ui_draw_fs(flow_state* fs) {
+    for(auto& path : fs->P) {
+        queue<bin*> pc = queue<bin*>(path);
+        vector<bin*> p;
+        while(pc.empty()==false) {
+            bin* b = pc.front(); pc.pop();
+            p.push_back(b);
+        }
+        ui_draw_bin__path(p);
+    }
 }
 
 void ui_draw_cell_fn(circuit* circ, cell* c) {
@@ -157,6 +172,25 @@ void ui_draw_net_fn(circuit* circ, net* n) {
             #endif
         }
         sp = s;
+    }
+}
+
+void ui_draw_bin__path(vector<bin*> b) {
+    setcolor(RED);
+    int i = 0;
+    char label[32] = {0};
+    for(auto& bi : b) {
+        double width = 1.;
+        double height = width;
+        // center at the cells coords
+        double x = bi->x;
+        double y = bi->y;
+        fillrect(x - width/2, y - height/2, x + width/2, y + width/2);
+        setcolor(WHITE);
+        snprintf(label,32,"p%d",i);
+        drawtext(x,y,label,10.0);
+        ++i;
+        setcolor(BLUE);
     }
 }
 
@@ -205,4 +239,6 @@ void ui_draw(circuit* circ) {
         ui_draw_rats_nest(circ);
     if (draw_cells)
         ui_draw_cells(circ);
+    if (draw_paths)
+        ui_draw_fs(fs);
 }

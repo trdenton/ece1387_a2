@@ -158,7 +158,6 @@ bool fabric::run_flow_step(flow_state* fs) {
                 state = 1;
             }
             break;
-        
 
         case 1: // get candidate paths
             bi = fs->overflowed_bins[bin_idx];
