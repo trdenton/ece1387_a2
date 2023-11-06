@@ -84,11 +84,16 @@ void ui_teardown() {
 }
 
 void ui_drawscreen() {
-    clearscreen();
+    static int clear=0;
     set_draw_mode (DRAW_NORMAL);  // Should set this if your program does any XOR drawing in callbacks.
-    if (fs->step)
+    if (fs->step) {
         fab->run_flow_step(fs);
-
+        clear++;
+        if (clear%10 == 0)
+            clearscreen();
+    }
+    else
+        clearscreen();
 
     ui_draw(circ);
 }
