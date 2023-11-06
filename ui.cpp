@@ -30,7 +30,7 @@ void ui_init(circuit* circuit, fabric* fabric) {
     fab = fabric;
     spdlog::info("Init UI");
     init_graphics("A1", BLACK);
-    create_button("Proceed","PUMP", ui_pump);
+    //create_button("Proceed","PUMP", ui_pump);
     init_world(3.,22.,22.,3.);
     //set_keypress_input(true);
     //set_mouse_move_input(true);
@@ -43,6 +43,7 @@ void ui_teardown() {
 
 void ui_drawscreen() {
     clearscreen();
+    spdlog::debug("DRAW SCREEN");
 	set_draw_mode (DRAW_NORMAL);  // Should set this if your program does any XOR drawing in callbacks.
     ui_draw(circ);
 }
@@ -57,6 +58,14 @@ void ui_mouse_handler (float x, float y) {
 
 void ui_key_handler(char c) {
 	spdlog::debug("keypress {}",c);
+    if (c=='n') {
+        spdlog::debug("NEXT",c);
+        ui_drawscreen();
+    }
+    if (c=='r') {
+        spdlog::debug("REDRAW",c);
+        ui_drawscreen();
+    }
 }
 
 void ui_draw_cell_fn(circuit* circ, cell* c) {

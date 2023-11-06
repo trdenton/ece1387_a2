@@ -148,12 +148,13 @@ void fabric::run_flow(double (*psi)(int iter, psi_params* h), psi_params* h) {
 }
 void fabric::run_flow_iter(double psi) {
     vector<queue<bin*>> candidate_paths ;
-    bin* bi = get_overused_bins()[0];
-    candidate_paths = find_candidate_paths(bi, psi);
-    sort(candidate_paths.begin(), candidate_paths.end(), fn_sort_candidate_paths);
-    for(auto& pk : candidate_paths) {
-        if (bi->supply() > 0) {
-            move_along_path(pk, psi);
+    for (auto& bi: get_overused_bins()) {
+        candidate_paths = find_candidate_paths(bi, psi);
+        sort(candidate_paths.begin(), candidate_paths.end(), fn_sort_candidate_paths);
+        for(auto& pk : candidate_paths) {
+            if (bi->supply() > 0) {
+                move_along_path(pk, psi);
+            }
         }
     }
 }
