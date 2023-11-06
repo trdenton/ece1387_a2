@@ -133,30 +133,79 @@ void fabric::move_along_path(queue<bin*> path, double psi) {
     }
 }
 
-void fabric::run_flow(double (*psi)(int iter, psi_params* h), psi_params* h) {
-    int iter=0;
-    if (psi == nullptr || h == nullptr) {
-        spdlog::error("psi or psi_param is null");
-    }
-    while (get_overused_bins().empty() == false) {
-        double p = psi(iter,h);
-        spdlog::debug("Flow iteration {} - setting p to {}", iter, p);
-        spdlog::debug("Overused bins: {}", get_overused_bins().size());
-        run_flow_iter(p);
-        iter++;
+void fabric::run_flow(flow_state* fs) {
+    fs->overflowed_bins = get_overused_bins();
+    while (!fs->overflowed_bins.empty()) {
+        spdlog::debug("Flow iteration {} - setting p to {}", fs->iter, fs->psi());
+        spdlog::debug("Overused bins: {}", fs->overflowed_bins.size());
+        run_flow_iter(fs);
     }
 }
-void fabric::run_flow_iter(double psi) {
-    vector<queue<bin*>> candidate_paths ;
-    for (auto& bi: get_overused_bins()) {
-        candidate_paths = find_candidate_paths(bi, psi);
-        sort(candidate_paths.begin(), candidate_paths.end(), fn_sort_candidate_paths);
-        for(auto& pk : candidate_paths) {
+
+bool fabric::run_flow_step(flow_state* fs) {
+    //micro state...
+    // just keep calling this concurrently to advance
+    static int state = 0;
+    static int bin_idx = 0;
+    static int path_idx = 0;
+    static bin* bi;
+    queue<bin*> pk;
+    switch(state) {
+        case 0: // init overflowed bins only once
+            fs->overflowed_bins = get_overused_bins();
+            bin_idx = 0;
+            if (!fs->overflowed_bins.empty()) {
+                state = 1;
+            }
+            break;
+        
+
+        case 1: // get candidate paths
+            bi = fs->overflowed_bins[bin_idx];
+            fs->P = find_candidate_paths( bi, fs->psi());
+            sort(fs->P.begin(), fs->P.end(), fn_sort_candidate_paths);
+            state = 2;
+            break;
+
+        case 2: // move along paths
+            if (!fs->P.empty()) {
+                pk = fs->P[path_idx];
+                if (bi->supply() > 0) {
+                    move_along_path(pk, fs->psi());
+                }
+                path_idx++;
+            }
+            if (path_idx == fs->P.size()) {
+                state = 1;
+                path_idx = 0;
+                bin_idx++;
+                if (bin_idx == fs->overflowed_bins.size()) {
+                    bin_idx = 0;
+                    state = 0;
+                    fs->iter++;
+                }
+            }
+            break;
+        default:
+            state=0;
+            break;
+    }
+
+    return get_overused_bins().empty();
+}
+
+void fabric::run_flow_iter(flow_state* fs) {
+    fs->overflowed_bins = get_overused_bins();
+    for (auto& bi: fs->overflowed_bins) {
+        fs->P = find_candidate_paths(bi, fs->psi());
+        sort(fs->P.begin(), fs->P.end(), fn_sort_candidate_paths);
+        for(auto& pk : fs->P) {
             if (bi->supply() > 0) {
-                move_along_path(pk, psi);
+                move_along_path(pk, fs->psi());
             }
         }
     }
+    fs->iter++;
 }
 
 bool fn_sort_bin_supply(bin* i, bin* j) {
@@ -248,4 +297,8 @@ vector<bin*> fabric::get_overused_bins() {
     // sort by amount of oversupply
     sort(result.begin(), result.end(), fn_sort_bin_supply);
     return result;
+}
+
+double flow_state::psi() {
+    return psi_fn(iter,&h);
 }

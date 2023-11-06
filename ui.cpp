@@ -18,6 +18,7 @@ float logic_cell_width = 10.0;
 
 circuit* circ;
 fabric* fab;
+flow_state* fs;
 
 
 void ui_pump(void (*draw)()) {
@@ -25,14 +26,15 @@ void ui_pump(void (*draw)()) {
     draw();
 }
 
-void ui_init(circuit* circuit, fabric* fabric) {
+void ui_init(circuit* circuit, fabric* fabric, flow_state* flow_state) {
     circ = circuit;
     fab = fabric;
+    fs = flow_state;
     spdlog::info("Init UI");
     init_graphics("A1", BLACK);
     //create_button("Proceed","PUMP", ui_pump);
     init_world(3.,22.,22.,3.);
-    //set_keypress_input(true);
+    set_keypress_input(true);
     //set_mouse_move_input(true);
     event_loop(ui_click_handler, ui_mouse_handler, ui_key_handler, ui_drawscreen);   
 }
@@ -61,11 +63,14 @@ void ui_key_handler(char c) {
     if (c=='n') {
         spdlog::debug("NEXT",c);
         ui_drawscreen();
+        if (fs->step) {
+            fab->run_flow_step(fs);
+            ui_draw_fs(fs);
+        }
     }
-    if (c=='r') {
-        spdlog::debug("REDRAW",c);
-        ui_drawscreen();
-    }
+}
+
+void ui_draw_fs(flow_state* fs) {
 }
 
 void ui_draw_cell_fn(circuit* circ, cell* c) {
