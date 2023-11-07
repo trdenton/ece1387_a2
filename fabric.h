@@ -26,6 +26,8 @@ struct flow_state {
     int iter;
     bool step;
     psi_params h;
+    bool done_flow;
+    bool done_spread;
     double (*psi_fn)(int iter, psi_params* h);
     vector<queue<bin*>> P;  // candidate paths
     vector<bin*> overflowed_bins;  
@@ -54,6 +56,7 @@ class fabric {
         void move_along_path(queue<bin*> path, double psi);
         void run_flow(flow_state*);
         bool run_flow_step(flow_state* fs);
+        void calculate_total_displacement();
 };
 
 #endif
