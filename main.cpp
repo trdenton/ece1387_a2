@@ -157,6 +157,7 @@ int main(int n, char** args) {
     psi_params pps = {.a= 0.1, .b= 0.1, .c=.1};
     flow_state fs = {.iter=0, .psi_fn = psi_fn, .h = pps, .step = step};
 
+    fab->spread_weight=0.05;
 
     if (!fs.step) {
         spdlog::debug("Running entire flow");
@@ -167,6 +168,17 @@ int main(int n, char** args) {
         spdlog::info("Entering interactive mode");
         ui_init(circ, fab, &fs);
         ui_teardown();
+    }
+
+    //circ->iter(fab);
+
+    if (interactive) {
+        while (true) {
+            circ->iter(fab);
+            ui_init(circ, fab, &fs);
+            ui_teardown();
+            fab->spread_weight *= 1.05;
+        }
     }
 
     spdlog::info("Exiting");

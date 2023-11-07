@@ -310,6 +310,19 @@ vector<bin*> fabric::get_overused_bins() {
     return result;
 }
 
+vector<bin*> fabric::get_used_bins() {
+    vector<bin*> result;
+    for(int i = 0; i < width; i++) {
+        for(int j = 0; j < height; j++) {
+            bin* b = get_bin(i,j);
+            if (!b->cells.empty())
+                result.push_back(b);
+        }
+    } 
+
+    return result;
+}
+
 double flow_state::psi() {
     return psi_fn(iter,&h);
 }

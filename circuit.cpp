@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <condition_variable>
 #include <cassert>
+#include "fabric.h"
 
 #ifndef GTEST
 #include "umfpack.h"
@@ -141,7 +142,7 @@ cell* circuit::get_cell(string label) {
     return nullptr;
 }
 
-void circuit::build_solver_rhs() {
+void circuit::build_solver_rhs(fabric* fab) {
     for(auto& c : cells) {
         if (c->is_fixed())
             continue;
@@ -156,6 +157,17 @@ void circuit::build_solver_rhs() {
             }
         } 
 
+        if (fab != nullptr) {
+            for(bin* b : fab->get_used_bins()) {
+                if (find(b->cells.begin(), b->cells.end(), c) != b->cells.end()) {
+                    spdlog::debug("found bin for cell @ {}, {}", b->x, b->y);
+                    xval += (double)(fab->spread_weight * b->x);
+                    yval += (double)(fab->spread_weight * b->y);
+                    break;
+                }
+            }
+        }
+
         if (fixed_weight_bias != 0) {
             xval *= (double)(100. + fixed_weight_bias)/100.;
             yval *= (double)(100. + fixed_weight_bias)/100.;
@@ -165,7 +177,7 @@ void circuit::build_solver_rhs() {
     }
 }
 
-void circuit::build_solver_matrix() {
+void circuit::build_solver_matrix(fabric* fab) {
     int ncells = cells.size();
     Q = new solver_matrix();
     Q->n = 0;
@@ -191,7 +203,7 @@ void circuit::build_solver_matrix() {
             ++movable_y_count;
 
             if (x==y)
-                val = sum_all_connected_weights(xcell);
+                val = sum_all_connected_weights(xcell, fab);
             else if (xcell->is_connected_to(ycell))
                 val = -1*get_clique_weight(xcell,ycell);
             else
@@ -263,9 +275,9 @@ void circuit::umfpack(enum axis ax, double* res) {
     #endif
 }
 
-void circuit::iter() {
-    build_solver_matrix();
-    build_solver_rhs();
+void circuit::iter(fabric* fab) {
+    build_solver_matrix(fab);
+    build_solver_rhs(fab);
 
     double* x = new double[Q->n];
     double* y = new double[Q->n];
@@ -300,7 +312,7 @@ double circuit::get_clique_weight(cell* c1, cell* c2) {
     return result;
 }
 
-double circuit::sum_all_connected_weights(cell* c) {
+double circuit::sum_all_connected_weights(cell* c, fabric* fab) {
     double result = 0.0;
     
     spdlog::debug("cell {}:", c->label);
@@ -315,6 +327,17 @@ double circuit::sum_all_connected_weights(cell* c) {
             }
         }
     }
+
+    if (fab != nullptr) {
+        for (bin* b : fab->get_used_bins()) {
+            if (find(b->cells.begin(), b->cells.end(), c) != b->cells.end()) {
+                spdlog::debug("adj: found bin for cell @ bin {}, {}", b->x, b->y);
+                result += fab->spread_weight;
+                break;
+            }
+        }
+    }
+
     spdlog::debug("\ttotal: {}", result);
 
     return result;

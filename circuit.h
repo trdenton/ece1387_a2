@@ -10,6 +10,7 @@
 #include <inttypes.h>
 #include <limits.h>
 #include "spdlog/spdlog.h"
+#include "fabric.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ enum axis {
 };
 
 class cell;
+class fabric;
 
 class net {
     private:
@@ -84,8 +86,8 @@ class circuit {
         vector<cell*> cells;
         unordered_set<string> fixed_cell_labels;
         unordered_map<string, net*> nets;
-        void build_solver_matrix();
-        void build_solver_rhs();
+        void build_solver_matrix(fabric* fab = nullptr);
+        void build_solver_rhs(fabric* fab = nullptr);
         void umfpack(enum axis ax, double* res);
 
     public:
@@ -99,12 +101,12 @@ class circuit {
         void add_cell_fixed_coords(vector<string> toks);
         net* get_net(string label);
         void add_net(string s);
-        double sum_all_connected_weights(cell* c);
+        double sum_all_connected_weights(cell* c, fabric* fab = nullptr);
         double get_clique_weight(cell* c1, cell* c2);
         solver_matrix* get_solver_matrix();
         bool connects_to_fixed_cell(cell* c1);
         vector<cell*> get_connected_fixed_cells(cell* c1);
-        void iter();
+        void iter(fabric* fab = nullptr);
         void foreach_cell(void (*fn)(circuit* circ, cell* c));
         void foreach_net(void (*fn)(circuit* circ, net* n));
         double hpwl();

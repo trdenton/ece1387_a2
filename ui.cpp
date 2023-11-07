@@ -78,7 +78,7 @@ void ui_init(circuit* circuit, fabric* fabric, flow_state* flow_state) {
     create_button("SPEED 0x","SPEED 1x", ui_speed_1x);
     create_button("SPEED 1x","SPEED .1x", ui_speed_p1x);
     create_button("SPEED .1x","SPEED .01x", ui_speed_p01x);
-    init_world(3.,22.,22.,3.);
+    init_world(-1.,26.,26.,-1.);
     set_keypress_input(true);
     //set_mouse_move_input(true);
 

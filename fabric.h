@@ -9,6 +9,9 @@
 
 using namespace std;
 
+class cell;
+class fabric;
+
 struct bin {
     double x;
     double y;
@@ -42,6 +45,7 @@ class fabric {
         bin*** bins;
         int width, height;
     public:
+        double spread_weight;
         fabric(int x, int y);
         ~fabric();
         void mark_obstruction(int x0, int y0, int x1, int y1);
@@ -57,6 +61,7 @@ class fabric {
         void run_flow(flow_state*);
         bool run_flow_step(flow_state* fs);
         void calculate_total_displacement();
+        vector<bin*> get_used_bins();
 };
 
 #endif
