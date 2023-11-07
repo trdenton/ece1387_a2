@@ -9,7 +9,7 @@ double psi_linear(int iter, psi_params* h) {
 // uses param h->b as x*x coeff h->a as x coeff
 double psi_quadratic(int iter, psi_params* h) {
     double t = (double)iter;
-    return h->b*t*t + psi_linear(iter,h);
+    return h->a*t*t;
 }
 
 // uses param h->c as x^3 coeff 
@@ -17,5 +17,5 @@ double psi_quadratic(int iter, psi_params* h) {
 //            h->a as x coeff
 double psi_cubic(int iter, psi_params* h) {
     double t = (double)iter;
-    return h->c*t*t*t + psi_quadratic(iter,h);
+    return h->a*t*t*t;
 }

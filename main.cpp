@@ -34,7 +34,7 @@ void test_suitesparse() {
 }
 
 void print_usage() {
-    cout << "Usage: ./a2 [-hdvis] -f filename" << endl;
+    cout << "Usage: ./a2 [-hdvis] [-z b] [-p <l|q|c>] [-w b] [-a A] -f filename" << endl;
     cout << "\t-h: this help message" <<endl;
     cout << "\t-v: print version info" <<endl;
     cout << "\t-f circuit_file: the circuit file (required)" <<endl;
@@ -42,7 +42,9 @@ void print_usage() {
     cout << "\t-i: enable interactive (gui) mode" <<endl;
     cout << "\t-s: step through algorithm" <<endl;
     cout << "\t-w b: incraese fixed cell weight bias by b% (higher = heavier, integer)" <<endl;
-    cout << "\t-p:  [l]inear,[q]uadratic,[c]ubic cost increase function " <<endl;
+    cout << "\t-p [l]inear,[q]uadratic,[c]ubic: psi cost function " <<endl;
+    cout << "\t-z b: use weight b for post flow spread" <<endl;
+    cout << "\t-a A: scale coefficient A for psi calc" <<endl;
 }
 
 void print_version() {
@@ -68,12 +70,16 @@ int main(int n, char** args) {
     bool step = false;
     int fixed_weight = 0;
     int spread_weight = 1.0;
+    double A = 1.0;
     double (*psi_fn)(int, psi_params*) = psi_quadratic;
 
     for(;;)
     {
-        switch(getopt(n, args, "vhf:disw:p:iz:"))
+        switch(getopt(n, args, "vhf:disw:p:iz:a:"))
         {
+            case 'a':
+                A = (double)stoi(optarg);
+                continue;
             case 'z':
                 spread_weight = stoi(optarg);
                 continue;
@@ -159,7 +165,7 @@ int main(int n, char** args) {
     fab->map_cells(circ->get_cells());
 
     //psi_params pps = {.a= 100., .b= 50., .c=25};
-    psi_params pps = {.a= 0.1, .b= 0.1, .c=.1};
+    psi_params pps = {.a= A};
     flow_state fs = {.iter=0, .psi_fn = psi_fn, .h = pps, .step = step};
 
     fab->spread_weight=(double)spread_weight;
