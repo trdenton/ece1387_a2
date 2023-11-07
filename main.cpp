@@ -67,11 +67,32 @@ int main(int n, char** args) {
     bool interactive = false;
     bool step = false;
     int fixed_weight = 0;
+    double (*psi_fn)(int, psi_params*) = psi_quadratic;
 
     for(;;)
     {
-        switch(getopt(n, args, "vhf:disw:"))
+        switch(getopt(n, args, "vhf:disw:p:"))
         {
+            case 'p':
+                switch(optarg[0])
+                {
+                    case 'l':
+                        psi_fn = psi_linear;
+                        break;
+                    case 'q':
+                        psi_fn = psi_quadratic;
+                        break;
+                    case 'c':
+                        psi_fn = psi_cubic;
+                        break;
+                    default:
+                        spdlog::error("Invalid psi function: specify l, q, c");
+                        print_usage();
+                        return 1;
+                        break;
+                }
+                continue;
+
             case 'f':
                 file = optarg;
                 continue;
@@ -132,8 +153,9 @@ int main(int n, char** args) {
     fab->mark_obstruction(2,2,9,9);
     fab->map_cells(circ->get_cells());
 
-    psi_params pps = {.a= 0.5, .b= 0.2};
-    flow_state fs = {.iter=0, .psi_fn = &psi_quadratic, .h = pps, .step = step};
+    //psi_params pps = {.a= 100., .b= 50., .c=25};
+    psi_params pps = {.a= 0.1, .b= 0.1, .c=.1};
+    flow_state fs = {.iter=0, .psi_fn = psi_fn, .h = pps, .step = step};
 
 
     if (!fs.step) {
