@@ -42,6 +42,7 @@ void print_usage() {
     cout << "\t-i: enable interactive (gui) mode" <<endl;
     cout << "\t-s: step through algorithm" <<endl;
     cout << "\t-w b: incraese fixed cell weight bias by b% (higher = heavier, integer)" <<endl;
+    cout << "\t-p:  [l]inear,[q]uadratic,[c]ubic cost increase function " <<endl;
 }
 
 void print_version() {
@@ -137,7 +138,7 @@ int main(int n, char** args) {
 
     if (!fs.step) {
         spdlog::debug("Running entire flow");
-        fab->run_flow(&fs);
+        while(!fab->run_flow_step(&fs));
     }
 
     if (interactive) {
