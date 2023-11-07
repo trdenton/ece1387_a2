@@ -67,12 +67,17 @@ int main(int n, char** args) {
     bool interactive = false;
     bool step = false;
     int fixed_weight = 0;
+    int spread_weight = 1.0;
     double (*psi_fn)(int, psi_params*) = psi_quadratic;
 
     for(;;)
     {
-        switch(getopt(n, args, "vhf:disw:p:"))
+        switch(getopt(n, args, "vhf:disw:p:iz:"))
         {
+            case 'z':
+                spread_weight = stoi(optarg);
+                continue;
+
             case 'p':
                 switch(optarg[0])
                 {
@@ -157,7 +162,7 @@ int main(int n, char** args) {
     psi_params pps = {.a= 0.1, .b= 0.1, .c=.1};
     flow_state fs = {.iter=0, .psi_fn = psi_fn, .h = pps, .step = step};
 
-    fab->spread_weight=0.05;
+    fab->spread_weight=(double)spread_weight;
 
     if (!fs.step) {
         spdlog::debug("Running entire flow");
@@ -170,15 +175,11 @@ int main(int n, char** args) {
         ui_teardown();
     }
 
-    //circ->iter(fab);
-
+    spdlog::info("performing post flow spread");
+    circ->iter(fab);
     if (interactive) {
-        while (true) {
-            circ->iter(fab);
-            ui_init(circ, fab, &fs);
-            ui_teardown();
-            fab->spread_weight *= 1.05;
-        }
+        ui_init(circ, fab, &fs);
+        ui_teardown();
     }
 
     spdlog::info("Exiting");
