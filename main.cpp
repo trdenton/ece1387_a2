@@ -166,7 +166,7 @@ int main(int n, char** args) {
 
     //psi_params pps = {.a= 100., .b= 50., .c=25};
     psi_params pps = {.a= A};
-    flow_state fs = {.iter=0, .psi_fn = psi_fn, .h = pps, .step = step};
+    flow_state fs = {.iter=0, .step = step, .h = pps, .psi_fn = psi_fn};
 
     fab->spread_weight=(double)spread_weight;
 
