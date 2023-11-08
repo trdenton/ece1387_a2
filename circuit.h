@@ -81,7 +81,7 @@ struct solver_matrix {
 
 class circuit {
     private:
-        int fixed_weight_bias;
+        double fixed_weight_bias;
         solver_matrix* Q;
         vector<cell*> cells;
         unordered_set<string> fixed_cell_labels;
@@ -110,7 +110,7 @@ class circuit {
         void foreach_cell(void (*fn)(circuit* circ, cell* c));
         void foreach_net(void (*fn)(circuit* circ, net* n));
         double hpwl();
-        void set_fixed_weight_bias(int n);
+        void set_fixed_weight_bias(double n);
         vector<cell*> get_cells() {return cells;};
 };
 void circuit_wait_for_ui();

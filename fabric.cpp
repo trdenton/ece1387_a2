@@ -9,6 +9,7 @@
 
 // forward declarations
 static double compute_cost(bin* bi, bin* bk);
+double distance_cell_to_bin(cell* i, bin* j);
 
 using namespace std;
 
@@ -74,9 +75,31 @@ void fabric::mark_obstruction(int x0, int y0, int x1, int y1) {
 void fabric::map_cells(vector<cell*> cells) {
     for(auto& c: cells) {
         pair<double,double> coords = c->get_coords();
+        
         int x = round(get<0>(coords));
         int y = round(get<1>(coords));
-        bins[x][y]->cells.push_back(c);
+        bin* b = bins[x][y];
+        if (b->usable)
+            bins[x][y]->cells.push_back(c);
+        else {
+            double smallest_dist = 0.;
+            bool first = true;
+            bin* smallest;
+            for(int i = 0; i < width; ++i){
+                for(int j = 0; j < height; ++j){
+                    b = bins[i][j]; 
+                    if (b->usable) {
+                        double newdist = distance_cell_to_bin(c, b);
+                        if (newdist < smallest_dist || first) {
+                            first = false;
+                            smallest_dist = newdist;
+                            smallest = b;
+                        }
+                    }
+                }
+            }
+            smallest->cells.push_back(c);
+        }
     }
 }
 

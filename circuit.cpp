@@ -151,8 +151,13 @@ void circuit::build_solver_rhs(fabric* fab) {
             vector<cell*> others = get_connected_fixed_cells(c);
             for (auto& other : others) {
                 pair<double,double> coords = other->get_coords();
-                xval += get_clique_weight(c,other)*get<0>(coords);   // w_i,z * x_z
-                yval += get_clique_weight(c,other)*get<1>(coords);   // w_i,z * y_z
+                xval += (fixed_weight_bias + get_clique_weight(c,other))*get<0>(coords);   // w_i,z * x_z
+                yval += (fixed_weight_bias + get_clique_weight(c,other))*get<1>(coords);   // w_i,z * y_z
+
+                if (fixed_weight_bias != 0) {
+                    spdlog::debug("adding fixed weight to RHS cell: {} other: {}", c->label, other->label);
+                }
+
                 spdlog::debug("cell {} wiz {} xz {} yz {} ", c->label, get_clique_weight(c,other), get<0>(coords), get<1>(coords));
             }
         } 
@@ -168,10 +173,6 @@ void circuit::build_solver_rhs(fabric* fab) {
             }
         }
 
-        if (fixed_weight_bias != 0) {
-            xval *= (double)(100. + fixed_weight_bias)/100.;
-            yval *= (double)(100. + fixed_weight_bias)/100.;
-        }
         Q->Cx.push_back(xval);
         Q->Cy.push_back(yval);
     }
@@ -322,8 +323,13 @@ double circuit::sum_all_connected_weights(cell* c, fabric* fab) {
         for (auto& cell_label : n->get_cell_labels()) {
             cell* other = get_cell(cell_label);
             if (other != c) {
-                spdlog::debug("\tadding net {}, weight {} (from cell {})", n->label, n->get_weight(), other->label);
-                result += n->get_weight();
+                double addition = n->get_weight();
+                if (other->is_fixed()) {
+                    addition += fixed_weight_bias;
+                    spdlog::debug("adding fixed weight bias to cell {} other {} by net {}", c->label, other->label, s);
+                }
+                spdlog::debug("\tadding net {}, weight {} (from cell {})", n->label, addition, other->label);
+                result += addition;
             }
         }
     }
@@ -410,7 +416,7 @@ double circuit::hpwl() {
     return (max_x - min_x) + (max_y - min_y);
 }
 
-void circuit::set_fixed_weight_bias(int n) {
+void circuit::set_fixed_weight_bias(double n) {
     spdlog::debug("WE CHANGE TO {}", n);
     fixed_weight_bias = n;
 }

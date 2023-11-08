@@ -41,7 +41,7 @@ void print_usage() {
     cout << "\t-d: turn on debug log level" <<endl;
     cout << "\t-i: enable interactive (gui) mode" <<endl;
     cout << "\t-s: step through algorithm" <<endl;
-    cout << "\t-w b: incraese fixed cell weight bias by b% (higher = heavier, integer)" <<endl;
+    cout << "\t-w b: incraese fixed cell weight, in tenths (e.g. 1 = 0.1)" <<endl;
     cout << "\t-p [l]inear,[q]uadratic,[c]ubic: psi cost function " <<endl;
     cout << "\t-z b: use weight b for post flow spread" <<endl;
     cout << "\t-a A: scale coefficient A for psi calc" <<endl;
@@ -156,7 +156,7 @@ int main(int n, char** args) {
 
     circuit* circ = new circuit(file);
     if (fixed_weight != 0) {
-        circ->set_fixed_weight_bias(fixed_weight);
+        circ->set_fixed_weight_bias(((double)fixed_weight)/10.0);
     }
     circ->iter();
 
